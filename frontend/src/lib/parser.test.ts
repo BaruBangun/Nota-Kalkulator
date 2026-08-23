@@ -23,6 +23,15 @@ describe('parseTransactionLine — harga saja', () => {
     expect(value('Susu Enak 28')).toMatchObject({ name: 'Susu Enak', quantity: 1, subtotal: 28 });
   });
 
+  it('mendukung baris negatif untuk pembayaran atau penyesuaian', () => {
+    expect(value('dibayar -200')).toMatchObject({
+      name: 'dibayar',
+      quantity: 1,
+      unitPrice: -200,
+      subtotal: -200,
+    });
+  });
+
   it('nama yang mengandung angka', () => {
     expect(value('Aqua 600 2x5.000')).toMatchObject({
       name: 'Aqua 600',

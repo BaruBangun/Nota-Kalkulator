@@ -31,6 +31,11 @@ describe('computeTotals', () => {
   it('nota kosong = 0', () => {
     expect(computeTotals([], NO_DISCOUNT)).toEqual({ subtotal: 0, discountAmount: 0, total: 0 });
   });
+
+  it('mengurangi total dengan baris pembayaran negatif', () => {
+    const totals = computeTotals(items('Barang 500', 'dibayar -200'), NO_DISCOUNT);
+    expect(totals).toEqual({ subtotal: 300, discountAmount: 0, total: 300 });
+  });
 });
 
 describe('diskon', () => {

@@ -21,7 +21,16 @@ export function buildNoteText(note: Note): string {
   const lines: string[] = ['NOTA', ''];
 
   note.items.forEach((item) => {
-    lines.push(row(itemLabel(item.name, item.quantity, item.unitPrice), formatNumber(item.subtotal)));
+    if (item.subtotal < 0) {
+      // Tampilkan baris pembayaran/penyesuaian sebagai nilai negatif,
+      // gunakan nama item apa adanya (mis. "dibayar") dan tampilkan
+      // nilai dengan tanda minus di depan.
+      const label = item.name.toUpperCase();
+      const value = `-${formatNumber(Math.abs(item.subtotal))}`;
+      lines.push(row(label, value));
+    } else {
+      lines.push(row(itemLabel(item.name, item.quantity, item.unitPrice), formatNumber(item.subtotal)));
+    }
   });
 
   lines.push(DIVIDER);

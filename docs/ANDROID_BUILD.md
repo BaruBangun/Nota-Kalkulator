@@ -29,16 +29,16 @@ npm -v
 
 ```bash
 cd frontend
-yarn install
-yarn test          # pastikan hijau
-yarn typecheck
-yarn build         # hasil di frontend/build
+npm ci --legacy-peer-deps
+npm test -- --run   # pastikan hijau
+npm run typecheck
+npm run build       # hasil di frontend/build
 ```
 
 Jika dihosting di sub-path (GitHub Pages repo):
 
 ```bash
-VITE_BASE=/nota-calculator/ yarn build
+VITE_BASE=/nota-calculator/ npm run build
 ```
 
 ## 3. Deploy PWA ke HTTPS
@@ -141,7 +141,7 @@ mendapat versi terbaru otomatis (Service Worker `autoUpdate`).
 
 ## Checklist cepat
 
-- [ ] `yarn build` sukses, `yarn test` hijau
+- [ ] `npm run build` sukses, `npm test -- --run` hijau
 - [ ] PWA online di HTTPS, installable, offline OK
 - [ ] `bubblewrap init` memakai URL manifest produksi
 - [ ] `assetlinks.json` ter-deploy di `/.well-known/` dan berisi SHA-256 Play App Signing

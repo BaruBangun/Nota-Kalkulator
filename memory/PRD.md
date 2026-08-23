@@ -35,7 +35,7 @@ Bangun aplikasi **Nota Calculator Level 2** yang jalan di Android (browser/PWA),
 - ✅ **Input menyatu di dalam nota** (`ReceiptInputRow`): kartu "Ketik item" dihapus, baris input jadi baris terakhir di dalam nota — ketik → Enter → langsung jadi baris nota, dengan live subtotal & pesan error inline di dalam kertas nota.
 - ✅ **Diskon dihilangkan dari UI** (`DiscountControl` dihapus). Engine diskon + unit test tetap ada di `calculator.ts` bila nanti diminta lagi.
 - ✅ Layout halaman utama jadi satu kolom terfokus (`max-w-2xl`): nota → catatan → aksi; dock mobile tetap.
-- ✅ QA: testing agent iterasi 2 = **100% pass** (swipe, input di dalam nota, kartu hilang, regresi simpan/riwayat/settings/mobile dock); 38 unit test hijau; `yarn typecheck` bersih.
+- ✅ QA: testing agent iterasi 2 = **100% pass** (swipe, input di dalam nota, kartu hilang, regresi simpan/riwayat/settings/mobile dock); 38 unit test hijau; `npm run typecheck` bersih.
 
 ## Implemented (2026-06 / iterasi 1)
 - ✅ Phase 1–2: `calculator.ts` + `parser.ts` (+ `currency.ts`) — 38 unit test hijau (parser, varian format, invalid input, total 193, diskon, IndexedDB save/load, backup parse).
@@ -48,14 +48,14 @@ Bangun aplikasi **Nota Calculator Level 2** yang jalan di Android (browser/PWA),
 - ✅ Phase 9: Settings — tema Light/Dark/System, ukuran cetak, Export/Import `nota-backup.json`, Muat contoh data, Hapus semua data, blok privasi.
 - ✅ Phase 10: Dokumentasi — `README.md`, `docs/PWA.md`, `docs/DEPLOY_GITHUB_PAGES.md`, `docs/ANDROID_BUILD.md`, workflow `.github/workflows/deploy-pages.yml`.
 - ✅ Aksesibilitas: semantic HTML, aria-label pada icon button, target sentuh ≥44px, focus ring, `prefers-reduced-motion`.
-- ✅ QA: testing agent iterasi 1 = **100% pass**, 0 bug; `yarn typecheck` bersih; `yarn build` sukses (JS 417 KB / 131 KB gzip).
+- ✅ QA: testing agent iterasi 1 = **100% pass**, 0 bug; `npm run typecheck` bersih; `npm run build` sukses (JS 417 KB / 131 KB gzip).
 
 ## Backlog
 ### P0 (belum ada)
 - (kosong — seluruh acceptance criteria Level 2 terpenuhi)
 
 ### P1
-- Uji offline penuh otomatis (saat ini manual: `yarn build && yarn preview` lalu matikan jaringan).
+- Uji offline penuh otomatis (saat ini manual: `npm run build && npm run preview` lalu matikan jaringan).
 - Undo setelah hapus item/nota (toast dengan aksi "Batalkan") — makin penting setelah ada swipe.
 - Ringkasan harian di Riwayat (total per hari sudah ada; filter/pencarian belum).
 - Code-splitting per rute untuk menurunkan bundle awal.

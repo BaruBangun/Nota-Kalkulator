@@ -33,8 +33,8 @@ Isi manifest (lihat `frontend/vite.config.mts`):
 
 ```bash
 cd frontend
-yarn build
-yarn preview        # http://localhost:3000
+npm run build
+npm run preview     # http://localhost:3000
 ```
 
 1. Buka halaman, tunggu SW aktif (DevTools → Application → Service Workers → *activated*).
@@ -42,7 +42,7 @@ yarn preview        # http://localhost:3000
 3. Reload: aplikasi tetap terbuka.
 4. Buat nota, tekan **Simpan** → tutup tab → buka lagi: nota tetap ada (IndexedDB).
 
-> Pada `yarn start` (dev), SW aktif dalam mode dev (`devOptions.enabled`) namun
+> Pada `npm run start` (dev), SW aktif dalam mode dev (`devOptions.enabled`) namun
 > precache hanya berisi offline fallback — normal, gunakan build untuk uji offline penuh.
 
 ## Install ke perangkat
@@ -65,7 +65,7 @@ yarn preview        # http://localhost:3000
 Menjalankan audit:
 
 ```bash
-yarn build && yarn preview
+npm run build && npm run preview
 # lalu: Chrome DevTools → Lighthouse → Analyze page load
 ```
 

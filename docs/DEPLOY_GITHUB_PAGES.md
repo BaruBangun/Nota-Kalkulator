@@ -1,6 +1,6 @@
 # Deploy ke GitHub Pages
 
-Aplikasi ini murni statis (tanpa backend), jadi hasil `yarn build` bisa dihosting di mana saja:
+Aplikasi ini murni statis (tanpa backend), jadi hasil `npm run build` bisa dihosting di mana saja:
 GitHub Pages, Netlify, Vercel, Cloudflare Pages, Nginx, atau folder di hosting biasa.
 
 Output build: `frontend/build/`
@@ -17,9 +17,9 @@ const base = process.env.VITE_BASE ?? '/';
 
 | Skenario | Perintah build |
 | --- | --- |
-| Domain sendiri / root (`https://nota.contoh.com/`) | `yarn build` |
-| GitHub Pages user/organisasi (`https://user.github.io/`) | `yarn build` |
-| GitHub Pages repo (`https://user.github.io/nota-calculator/`) | `VITE_BASE=/nota-calculator/ yarn build` |
+| Domain sendiri / root (`https://nota.contoh.com/`) | `npm run build` |
+| GitHub Pages user/organisasi (`https://user.github.io/`) | `npm run build` |
+| GitHub Pages repo (`https://user.github.io/nota-calculator/`) | `VITE_BASE=/nota-calculator/ npm run build` |
 
 Router memakai **HashRouter** (`/#/history`), sehingga deep-link tidak butuh konfigurasi
 rewrite server dan tidak akan 404 di GitHub Pages.
@@ -32,7 +32,7 @@ rewrite server dan tidak akan 404 di GitHub Pages.
 
 ```bash
 cd frontend
-VITE_BASE=/nota-calculator/ yarn build
+VITE_BASE=/nota-calculator/ npm run build
 
 cd build
 git init
@@ -55,11 +55,11 @@ Aktifkan dengan: **Settings → Pages → Source: GitHub Actions**, lalu push ke
 Isi workflow (ringkas):
 
 ```yaml
-- run: yarn install --frozen-lockfile
+- run: npm ci --legacy-peer-deps
   working-directory: frontend
-- run: yarn test && yarn typecheck
+- run: npm test -- --run && npm run typecheck
   working-directory: frontend
-- run: VITE_BASE="/${{ github.event.repository.name }}/" yarn build
+- run: VITE_BASE="/${{ github.event.repository.name }}/" npm run build
   working-directory: frontend
 - uses: actions/upload-pages-artifact@v3
   with: { path: frontend/build }

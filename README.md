@@ -86,21 +86,21 @@ frontend/
 
 ```bash
 cd frontend
-yarn install
-yarn start          # dev server di http://localhost:3000
+npm ci --legacy-peer-deps
+npm run start       # dev server di http://localhost:3000
 ```
 
 Perintah lain:
 
 ```bash
-yarn test           # unit test (Vitest): parser, kalkulator, diskon, IndexedDB
-yarn typecheck      # TypeScript strict, tanpa emit
-yarn build          # build produksi ke frontend/build
-yarn preview        # serve hasil build (uji Service Worker & offline)
+npm test -- --run   # unit test (Vitest): parser, kalkulator, diskon, IndexedDB
+npm run typecheck   # TypeScript strict, tanpa emit
+npm run build       # build produksi ke frontend/build
+npm run preview     # serve hasil build (uji Service Worker & offline)
 ```
 
-> Service Worker hanya melakukan precache penuh pada hasil `yarn build`.
-> Untuk uji offline sungguhan, jalankan `yarn build && yarn preview` lalu matikan jaringan.
+> Service Worker hanya melakukan precache penuh pada hasil `npm run build`.
+> Untuk uji offline sungguhan, jalankan `npm run build && npm run preview` lalu matikan jaringan.
 
 ---
 

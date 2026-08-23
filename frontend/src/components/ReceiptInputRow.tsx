@@ -2,18 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import type { RefObject } from 'react';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
-import { parseTransactionLine, parseTransactionLines } from '@/lib/parser';
 import { formatNumber, formatQuantity } from '@/lib/currency';
-import { btnPrimary, btnSize, cardBase, inputBase, labelBase } from '@/lib/styles';
+import { parseTransactionLine, parseTransactionLines } from '@/lib/parser';
 import { cn } from '@/lib/utils';
 import type { ParseFailure, ParseResult, ParseSuccess, ParsedTransaction } from '@/types/transaction';
 
 interface Props {
-  onAdd: (parsed: ParsedTransaction[]) => void;
   inputRef: RefObject<HTMLTextAreaElement | null>;
+  onAdd: (parsed: ParsedTransaction[]) => void;
+  showHint?: boolean;
 }
 
-export const NoteEditor = ({ onAdd, inputRef }: Props) => {
+/** Baris input yang menyatu di dalam nota: ketik → Enter → jadi baris nota. */
+export const ReceiptInputRow = ({ inputRef, onAdd, showHint = false }: Props) => {
   const [value, setValue] = useState('');
   const [failure, setFailure] = useState<ParseFailure | null>(null);
 
@@ -27,7 +28,7 @@ export const NoteEditor = ({ onAdd, inputRef }: Props) => {
     const element = inputRef.current;
     if (!element) return;
     element.style.height = 'auto';
-    element.style.height = `${Math.min(element.scrollHeight, 168)}px`;
+    element.style.height = `${Math.min(element.scrollHeight, 120)}px`;
   }, [value, inputRef]);
 
   const addFromText = (text: string): boolean => {
@@ -41,12 +42,8 @@ export const NoteEditor = ({ onAdd, inputRef }: Props) => {
     }
     onAdd(parsed);
     setFailure(null);
-    if (parsed.length > 1) {
-      toast.success(`${parsed.length} item ditambahkan`);
-    }
-    if (failures.length) {
-      toast.message(`${failures.length} baris dilewati`, { description: failures[0].hint });
-    }
+    if (parsed.length > 1) toast.success(`${parsed.length} item ditambahkan`);
+    if (failures.length) toast.message(`${failures.length} baris dilewati`, { description: failures[0].hint });
     return true;
   };
 
@@ -60,15 +57,13 @@ export const NoteEditor = ({ onAdd, inputRef }: Props) => {
   };
 
   return (
-    <section className={cn(cardBase, 'no-print p-4 sm:p-5')} data-testid="note-editor">
-      <div className="flex items-baseline justify-between gap-3">
-        <label htmlFor="item-input" className={labelBase}>
-          Ketik item
-        </label>
-        <span className="text-xs text-muted-foreground">Enter = tambah item</span>
-      </div>
-
-      <div className="mt-3 flex items-start gap-2">
+    <li className="no-print py-2" data-testid="receipt-input-row">
+      <div
+        className={cn(
+          'flex items-start gap-2 border-b border-dashed pb-1.5 transition-colors duration-150',
+          failure ? 'border-destructive' : 'border-paper-line/70 focus-within:border-primary',
+        )}
+      >
         <textarea
           id="item-input"
           ref={inputRef}
@@ -80,8 +75,9 @@ export const NoteEditor = ({ onAdd, inputRef }: Props) => {
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="done"
+          aria-label="Ketik item nota"
           aria-describedby="item-hint"
-          placeholder="Beras 4x40"
+          placeholder="Ketik item… mis. Beras 4x40"
           onChange={(event) => {
             setValue(event.target.value);
             if (failure) setFailure(null);
@@ -98,40 +94,46 @@ export const NoteEditor = ({ onAdd, inputRef }: Props) => {
             event.preventDefault();
             if (addFromText(text)) setValue('');
           }}
-          className={cn(inputBase, 'min-h-[56px] resize-none py-4 font-mono text-lg leading-snug')}
+          className="min-h-[28px] flex-1 resize-none border-0 bg-transparent p-0 font-mono text-sm leading-relaxed text-paper-foreground outline-none placeholder:text-paper-muted/70"
         />
+
+        <span className="tabular shrink-0 pt-0.5 font-mono text-sm text-paper-muted" data-testid="input-live-subtotal">
+          {live?.ok ? formatNumber(live.value.subtotal) : '·'}
+        </span>
+
         <button
           type="button"
           onClick={commit}
           aria-label="Tambah item"
           data-testid="add-item-btn"
-          className={cn(btnPrimary, btnSize.icon, 'h-14 w-14 shrink-0')}
+          className="-mr-1.5 -mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-paper-muted transition-colors duration-150 hover:bg-paper-line/40 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Plus className="h-5 w-5" />
+          <Plus className="h-4 w-4" />
         </button>
       </div>
 
-      <p id="item-hint" className="mt-3 min-h-[1.25rem] text-sm" data-testid="editor-hint">
+      <p id="item-hint" className="mt-1.5 min-h-[1rem] font-mono text-[11px]" data-testid="editor-hint">
         {failure ? (
-          <span className="inline-flex animate-nudge items-center gap-1.5 text-destructive" data-testid="editor-error">
-            {failure.message}.{' '}
-            <span className="text-muted-foreground">{failure.hint}</span>
+          <span className="inline-flex animate-nudge items-center gap-1 text-destructive" data-testid="editor-error">
+            {failure.message}. <span className="text-paper-muted">{failure.hint}</span>
+          </span>
+        ) : live?.ok && live.value.quantity !== 1 ? (
+          <span className="text-primary" data-testid="editor-live-preview">
+            {live.value.name} {formatQuantity(live.value.quantity)} × {formatNumber(live.value.unitPrice)} ={' '}
+            {formatNumber(live.value.subtotal)}
           </span>
         ) : live?.ok ? (
-          <span className="font-mono text-primary" data-testid="editor-live-preview">
-            {live.value.name}
-            {live.value.quantity !== 1 && (
-              <span className="text-muted-foreground">
-                {' '}
-                {formatQuantity(live.value.quantity)} × {formatNumber(live.value.unitPrice)}
-              </span>
-            )}{' '}
-            = {formatNumber(live.value.subtotal)}
+          <span className="text-primary" data-testid="editor-live-preview">
+            Enter untuk tambah {live.value.name}
+          </span>
+        ) : showHint ? (
+          <span className="text-paper-muted" data-testid="receipt-empty">
+            Contoh: Susu Enak 28 · Beras 4x40 · Semen 2x75.000
           </span>
         ) : (
-          <span className="text-muted-foreground">Contoh: Susu Enak 28 · Beras 4x40 · Semen 2x75.000</span>
+          <span className="text-paper-muted/80">Enter = tambah item · geser baris ke kiri untuk hapus</span>
         )}
       </p>
-    </section>
+    </li>
   );
 };

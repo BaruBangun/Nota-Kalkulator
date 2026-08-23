@@ -1,0 +1,22 @@
+{
+  "summary": "Frontend-only regression + iteration-2 verification for NotaKalk. Tested: input relocated inside receipt (receipt-input-row inside ul[data-testid='receipt-items']), Enter-add flow (Susu Enak 28, Teh Kotak 5, Beras 4x40 -> total 193, input cleared & re-focused after each Enter), removed cards absent (note-editor / discount-control / discount-mode-percent / discount-mode-nominal / discount-value-input all count=0), swipe-to-delete (100px left drag on item-swipe-1 removed item, total 193 -> 188; 20px short drag did NOT delete), 3-dot menu still works (Edit item -> 'Beras 5x40' subtotal=200; Duplicate 3->4; Move up rearranges; Delete removes), live preview + subtotal (Beras 4x40 -> input-live-subtotal='160', editor-live-preview visible), inline errors (Beras abc -> 'Format belum dikenali' + example; Beras 4x -> 'Angkanya belum lengkap'), note-memo persists to receipt-note, Save+reload restores draft (IndexedDB), History page shows saved note (Hari ini group implicit, opens fine with input row inside), Mobile 390x844 dock shows all 5 dock testids and focus-input-btn actually focuses input, dock-total == receipt-total (both '416'). No console errors observed. All acceptance criteria met.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "NoteItemRow.onPointerLeave triggers endSwipe on any accidental leave which could cause accidental delete if the cursor leaves the row past the threshold; consider ignoring leave events and only committing on pointerup/cancel. Currently works fine in tests but is a UX foot-gun.",
+    "ReceiptInputRow uses parseTransactionLine for live parse but parseTransactionLines for commit — duplication is small and acceptable, no action needed."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "100%"},
+  "seed_data_creation": "One saved note created via UI (Susu Enak, Beras 5x40, Susu Enak dup, Beras 4x40; total 416; note 'Test catatan') persisted in IndexedDB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Everything for iteration 2 (input-in-receipt, swipe-to-delete, removed cards) passes. Draft persists via IndexedDB; each Playwright run uses a fresh context so IndexedDB starts empty per run.",
+  "rca of the issue": "n/a - no issues found"
+}

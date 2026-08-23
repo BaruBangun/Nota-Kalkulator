@@ -30,6 +30,13 @@ Bangun aplikasi **Nota Calculator Level 2** yang jalan di Android (browser/PWA),
 - Format angka Indonesia tanpa "Rp".
 - Offline-first, installable, data hanya di perangkat.
 
+## Implemented (2026-06 / iterasi 2 — permintaan user)
+- ✅ **Swipe-to-delete**: geser baris item ke kiri (>76px) → item terhapus; latar merah "Hapus" muncul saat digeser; geser pendek → kembali. Pointer Events (jalan di touch & mouse); pointerleave hanya me-reset (tidak menghapus).
+- ✅ **Input menyatu di dalam nota** (`ReceiptInputRow`): kartu "Ketik item" dihapus, baris input jadi baris terakhir di dalam nota — ketik → Enter → langsung jadi baris nota, dengan live subtotal & pesan error inline di dalam kertas nota.
+- ✅ **Diskon dihilangkan dari UI** (`DiscountControl` dihapus). Engine diskon + unit test tetap ada di `calculator.ts` bila nanti diminta lagi.
+- ✅ Layout halaman utama jadi satu kolom terfokus (`max-w-2xl`): nota → catatan → aksi; dock mobile tetap.
+- ✅ QA: testing agent iterasi 2 = **100% pass** (swipe, input di dalam nota, kartu hilang, regresi simpan/riwayat/settings/mobile dock); 38 unit test hijau; `yarn typecheck` bersih.
+
 ## Implemented (2026-06 / iterasi 1)
 - ✅ Phase 1–2: `calculator.ts` + `parser.ts` (+ `currency.ts`) — 38 unit test hijau (parser, varian format, invalid input, total 193, diskon, IndexedDB save/load, backup parse).
 - ✅ Phase 3: UI nota — `NoteEditor` (live parse hint, paste multi-baris), `NotePreview` (kertas + gerigi + mono + tabular-nums), `NoteItemRow` (edit inline, duplikat, hapus, naik, turun via menu ⋮), `TotalDisplay`, `DiscountControl` (nominal/persen), `NoteMemo`.
@@ -49,9 +56,8 @@ Bangun aplikasi **Nota Calculator Level 2** yang jalan di Android (browser/PWA),
 
 ### P1
 - Uji offline penuh otomatis (saat ini manual: `yarn build && yarn preview` lalu matikan jaringan).
-- Swipe gesture pada baris item (saat ini hanya menu ⋮).
+- Undo setelah hapus item/nota (toast dengan aksi "Batalkan") — makin penting setelah ada swipe.
 - Ringkasan harian di Riwayat (total per hari sudah ada; filter/pencarian belum).
-- Undo setelah hapus item/nota (toast dengan aksi "Batalkan").
 - Code-splitting per rute untuk menurunkan bundle awal.
 
 ### P2 (Level 3 — sengaja tidak dibuat)

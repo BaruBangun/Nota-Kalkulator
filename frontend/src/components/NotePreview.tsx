@@ -1,4 +1,5 @@
 import { NoteItemRow } from '@/components/NoteItemRow';
+import { ReceiptInputRow } from '@/components/ReceiptInputRow';
 import { TotalDisplay } from '@/components/TotalDisplay';
 import { formatNumber } from '@/lib/currency';
 import { formatFull } from '@/lib/dates';
@@ -6,6 +7,7 @@ import type { Totals } from '@/lib/calculator';
 import { cn } from '@/lib/utils';
 import type { Discount, NoteItem } from '@/types/note';
 import type { ParsedTransaction } from '@/types/transaction';
+import type { RefObject } from 'react';
 
 interface Props {
   items: NoteItem[];
@@ -14,6 +16,8 @@ interface Props {
   note: string;
   createdAt?: string | null;
   readOnly?: boolean;
+  inputRef?: RefObject<HTMLTextAreaElement | null>;
+  onAddItems?: (parsed: ParsedTransaction[]) => void;
   onEditItem?: (id: string, parsed: ParsedTransaction) => void;
   onDuplicateItem?: (index: number) => void;
   onRemoveItem?: (id: string) => void;
@@ -29,6 +33,8 @@ export const NotePreview = ({
   note,
   createdAt,
   readOnly = false,
+  inputRef,
+  onAddItems,
   onEditItem = noop,
   onDuplicateItem = noop,
   onRemoveItem = noop,
@@ -49,12 +55,9 @@ export const NotePreview = ({
 
       <div className="dashed-rule mt-4" />
 
-      {items.length === 0 ? (
-        <div className="py-10 text-center" data-testid="receipt-empty">
-          <p className="font-mono text-sm text-paper-muted">Belum ada item</p>
-          <p className="mt-2 font-mono text-xs text-paper-muted/80">
-            Ketik <span className="text-paper-foreground">Susu Enak 28</span> lalu tekan Enter
-          </p>
+      {items.length === 0 && readOnly ? (
+        <div className="py-10 text-center">
+          <p className="font-mono text-sm text-paper-muted">Nota kosong</p>
         </div>
       ) : (
         <ul className="divide-y divide-paper-line/45" data-testid="receipt-items">
@@ -71,6 +74,9 @@ export const NotePreview = ({
               onMove={onMoveItem}
             />
           ))}
+          {!readOnly && inputRef && onAddItems && (
+            <ReceiptInputRow inputRef={inputRef} onAdd={onAddItems} showHint={items.length === 0} />
+          )}
         </ul>
       )}
 

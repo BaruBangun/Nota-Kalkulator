@@ -4,9 +4,7 @@ import { FilePlus2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppHeader } from '@/components/AppHeader';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
-import { DiscountControl } from '@/components/DiscountControl';
 import { ActionDock, NoteActions } from '@/components/NoteActions';
-import { NoteEditor } from '@/components/NoteEditor';
 import { NoteMemo } from '@/components/NoteMemo';
 import { NotePreview } from '@/components/NotePreview';
 import { buildNote, computeTotals } from '@/lib/calculator';
@@ -124,7 +122,7 @@ export default function NewNote() {
     <div className="min-h-screen">
       <AppHeader />
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-44 pt-5 md:px-8 md:pb-16 md:pt-8">
+      <main className="mx-auto w-full max-w-2xl px-4 pb-44 pt-5 md:px-8 md:pb-16 md:pt-8">
         <div className="no-print flex items-start justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl" data-testid="page-title">
@@ -147,32 +145,25 @@ export default function NewNote() {
           </button>
         </div>
 
-        <div className="mt-6 grid gap-5 md:grid-cols-2 md:gap-8 lg:gap-12">
-          <div className="no-print space-y-4">
-            <NoteEditor inputRef={inputRef} onAdd={(parsed) => dispatch({ type: 'add', parsed })} />
-            <DiscountControl
-              discount={draft.discount}
-              subtotal={totals.subtotal}
-              onChange={(discount) => dispatch({ type: 'discount', discount })}
-            />
-            <NoteMemo note={draft.note} onChange={(note) => dispatch({ type: 'note', note })} />
-            <div className="hidden md:block">
-              <NoteActions {...actionProps} />
-            </div>
-          </div>
+        <div className="mt-6 space-y-4">
+          <NotePreview
+            items={draft.items}
+            totals={totals}
+            discount={draft.discount}
+            note={draft.note}
+            createdAt={draft.createdAt}
+            inputRef={inputRef}
+            onAddItems={(parsed) => dispatch({ type: 'add', parsed })}
+            onEditItem={(itemId, parsed) => dispatch({ type: 'update', id: itemId, parsed })}
+            onDuplicateItem={(index) => dispatch({ type: 'duplicate', index })}
+            onRemoveItem={(itemId) => dispatch({ type: 'remove', id: itemId })}
+            onMoveItem={(index, direction) => dispatch({ type: 'move', index, direction })}
+          />
 
-          <div className="md:sticky md:top-24 md:self-start">
-            <NotePreview
-              items={draft.items}
-              totals={totals}
-              discount={draft.discount}
-              note={draft.note}
-              createdAt={draft.createdAt}
-              onEditItem={(itemId, parsed) => dispatch({ type: 'update', id: itemId, parsed })}
-              onDuplicateItem={(index) => dispatch({ type: 'duplicate', index })}
-              onRemoveItem={(itemId) => dispatch({ type: 'remove', id: itemId })}
-              onMoveItem={(index, direction) => dispatch({ type: 'move', index, direction })}
-            />
+          <NoteMemo note={draft.note} onChange={(note) => dispatch({ type: 'note', note })} />
+
+          <div className="no-print hidden md:block">
+            <NoteActions {...actionProps} />
           </div>
         </div>
       </main>

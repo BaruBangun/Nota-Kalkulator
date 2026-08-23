@@ -22,11 +22,10 @@ TOTAL                    193
 
 | Area | Detail |
 | --- | --- |
-| Input cepat | `Susu 28`, `Beras 4x40`, `Beras 4*40`, `Beras 4X40`, `Semen 2x75.000` (case-insensitive, spasi bebas) |
+| Input cepat | Baris input menyatu di dalam nota: `Susu 28`, `Beras 4x40`, `Beras 4*40`, `Beras 4X40`, `Semen 2x75.000` (case-insensitive, spasi bebas) |
 | Enter-loop | Enter → parse → tambah item → input dikosongkan → fokus kembali |
 | Paste massal | Tempel banyak baris sekaligus, semua baris valid langsung jadi item |
-| Item | Edit inline, duplikat, hapus, naik, turun (menu ⋮) |
-| Diskon | Nominal atau persen, opsional |
+| Item | Geser baris ke kiri untuk hapus cepat; menu ⋮ untuk edit inline, duplikat, hapus, naik, turun |
 | Catatan | Catatan bebas per nota |
 | Total | Real-time, satu calculation engine untuk preview / simpan / share / print |
 | Simpan | IndexedDB (`notakalk` → store `notes`, `meta`) |
@@ -59,10 +58,10 @@ frontend/
     ├── index.css               # design token + print CSS
     ├── components/
     │   ├── AppHeader.tsx  BrandMark.tsx
-    │   ├── NoteEditor.tsx      # input utama (Enter-loop, live parse)
-    │   ├── NotePreview.tsx     # tampilan nota (kertas + gerigi)
-    │   ├── NoteItemRow.tsx     # baris item + menu ⋮ + edit inline
-    │   ├── TotalDisplay.tsx  DiscountControl.tsx  NoteMemo.tsx
+    │   ├── NotePreview.tsx     # tampilan nota (kertas + gerigi) + baris input di dalamnya
+    │   ├── ReceiptInputRow.tsx # input utama menyatu di nota (Enter-loop, live parse)
+    │   ├── NoteItemRow.tsx     # baris item + swipe hapus + menu ⋮ + edit inline
+    │   ├── TotalDisplay.tsx  NoteMemo.tsx
     │   ├── NoteActions.tsx     # dock mobile + action row desktop
     │   ├── ShareButton.tsx  HistoryList.tsx  SettingsPanel.tsx
     │   ├── ConfirmDialog.tsx  primitives.tsx

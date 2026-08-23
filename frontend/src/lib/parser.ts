@@ -2,16 +2,16 @@ import { parseCurrency, roundMoney } from '@/lib/currency';
 import type { ParseResult, ParsedTransaction } from '@/types/transaction';
 
 const MULTIPLY = '[x×*]';
-const NUMBER = '[\\d.,]+';
+const NUMBER = '[-−]?[\\d.,]+';
 
 // "Beras 4x40" / "Beras 4 X 40" / "Beras 4*40"
 const QTY_PRICE = new RegExp(`^(.*?)\\s*(${NUMBER})\\s*${MULTIPLY}\\s*(${NUMBER})$`, 'i');
-// "Susu Enak 28"
+// "Susu Enak 28" / "dibayar -200"
 const PRICE_ONLY = new RegExp(`^(.*?)\\s*(${NUMBER})$`);
 // "Beras 4x" (belum lengkap)
 const INCOMPLETE = new RegExp(`${MULTIPLY}\\s*$|^\\s*${MULTIPLY}`, 'i');
 
-const HINT = 'Contoh: Beras 4x40 atau Susu Enak 28';
+const HINT = 'Contoh: Beras 4x40 · Susu Enak 28 · dibayar -200';
 
 function failure(
   code: 'empty' | 'missing-name' | 'incomplete-price' | 'unrecognized',

@@ -33,7 +33,9 @@ export function formatQuantity(value: number): string {
  * dan desimal. Mengembalikan null bila bukan angka valid.
  */
 export function parseCurrency(input: string): number | null {
-  const text = String(input).replace(/\s|_/g, '');
+  const raw = String(input).replace(/\s|_/g, '');
+  const negative = raw.startsWith('-') || raw.startsWith('−');
+  const text = negative ? raw.slice(1) : raw;
   if (!text || !/^[\d.,]+$/.test(text) || !/\d/.test(text)) return null;
 
   const hasDot = text.includes('.');
@@ -64,7 +66,8 @@ export function parseCurrency(input: string): number | null {
   }
 
   const value = Number(normalized);
-  return Number.isFinite(value) ? value : null;
+  if (!Number.isFinite(value)) return null;
+  return negative ? -value : value;
 }
 
 export function roundMoney(value: number): number {

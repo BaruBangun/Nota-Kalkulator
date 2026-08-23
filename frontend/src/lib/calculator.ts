@@ -33,11 +33,12 @@ export function computeSubtotal(items: NoteItem[]): number {
 
 export function computeDiscountAmount(subtotal: number, discount: Discount): number {
   if (!discount || discount.type === 'none' || !discount.value) return 0;
+  const base = Math.max(subtotal, 0);
   if (discount.type === 'percent') {
     const percent = Math.min(Math.max(discount.value, 0), 100);
-    return roundMoney((subtotal * percent) / 100);
+    return roundMoney((base * percent) / 100);
   }
-  return roundMoney(Math.min(Math.max(discount.value, 0), subtotal));
+  return roundMoney(Math.min(Math.max(discount.value, 0), base));
 }
 
 export function computeTotals(items: NoteItem[], discount: Discount): Totals {
@@ -46,7 +47,7 @@ export function computeTotals(items: NoteItem[], discount: Discount): Totals {
   return {
     subtotal,
     discountAmount,
-    total: roundMoney(Math.max(subtotal - discountAmount, 0)),
+    total: roundMoney(subtotal - discountAmount),
   };
 }
 

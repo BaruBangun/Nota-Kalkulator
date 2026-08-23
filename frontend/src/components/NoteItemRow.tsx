@@ -149,7 +149,10 @@ export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate,
           )}
         </div>
 
-        <span className="tabular shrink-0 tracking-tight" data-testid={`receipt-item-subtotal-${index}`}>
+        <span
+          className={cn('tabular shrink-0 tracking-tight', item.subtotal < 0 && 'font-semibold text-primary')}
+          data-testid={`receipt-item-subtotal-${index}`}
+        >
           {formatNumber(item.subtotal)}
         </span>
 

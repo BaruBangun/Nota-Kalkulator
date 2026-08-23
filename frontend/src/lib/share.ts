@@ -32,7 +32,7 @@ export function buildNoteText(note: Note): string {
     lines.push(row(label, `-${formatNumber(note.discountAmount)}`));
   }
 
-  lines.push(row('TOTAL', formatNumber(note.total)));
+  lines.push(row(note.total < 0 ? 'KEMBALI' : 'TOTAL', formatNumber(Math.abs(note.total))));
 
   if (note.note) {
     lines.push('', 'Catatan:', note.note);

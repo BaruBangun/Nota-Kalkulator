@@ -93,7 +93,12 @@ export const NotePreview = ({
           </>
         )}
         <div className="mt-2 border-t-[3px] border-double border-paper-line">
-          <TotalDisplay label="Total" value={totals.total} emphasis testId="receipt-total" />
+          <TotalDisplay
+            label={totals.total < 0 ? 'Kembali' : 'Total'}
+            value={Math.abs(totals.total)}
+            emphasis
+            testId="receipt-total"
+          />
         </div>
       </div>
 

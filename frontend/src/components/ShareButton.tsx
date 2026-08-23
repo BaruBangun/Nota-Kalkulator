@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { shareNote } from '@/lib/share';
 import { btnOutline, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/state/settings';
 import type { Note } from '@/types/note';
 
 interface Props {
@@ -20,10 +21,13 @@ export const ShareButton = ({
   label = 'Bagikan',
   testId = 'share-btn',
 }: Props) => {
+  const { settings } = useSettings();
+
   const handleShare = async () => {
-    const outcome = await shareNote(getNote());
+    const outcome = await shareNote(getNote(), settings.storeName, settings.printSize);
     if (outcome === 'copied') toast.success('Nota disalin ke clipboard');
-    if (outcome === 'failed') toast.error('Gagal membagikan nota');
+    if (outcome === 'downloaded') toast.success('PDF diunduh karena perangkat ini tidak mendukung berbagi file langsung.');
+    if (outcome === 'failed') toast.error('PDF gagal dibuat. Coba lagi.');
   };
 
   return (

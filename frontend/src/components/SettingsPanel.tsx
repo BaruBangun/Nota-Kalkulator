@@ -5,8 +5,8 @@ import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { useInstallPrompt } from '@/hooks/useInstallPrompt';
 import { exportData, importData } from '@/lib/export';
 import { sampleNotes } from '@/lib/sampleData';
-import { clearAllData, listNotes, putNotes } from '@/lib/storage';
-import { btnDanger, btnOutline, btnPrimary, btnSize, cardBase, labelBase } from '@/lib/styles';
+import { clearAllData, getSettings, listNotes, putNotes } from '@/lib/storage';
+import { btnDanger, btnOutline, btnPrimary, btnSize, cardBase, inputBase, labelBase } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/state/settings';
 import type { PrintSize, ThemeMode } from '@/types/note';
@@ -62,6 +62,11 @@ export const SettingsPanel = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [noteCount, setNoteCount] = useState(0);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [storeName, setStoreName] = useState(settings.storeName);
+
+  useEffect(() => {
+    setStoreName(settings.storeName);
+  }, [settings.storeName]);
 
   const refresh = () => listNotes().then((notes) => setNoteCount(notes.length));
 
@@ -76,7 +81,8 @@ export const SettingsPanel = () => {
 
   const handleImport = async (file: File) => {
     try {
-      const count = await importData(file);
+      const count = await importData(file, { applySettings: true });
+      update(await getSettings());
       await refresh();
       toast.success(`${count} nota diimpor`);
     } catch (error) {
@@ -92,9 +98,15 @@ export const SettingsPanel = () => {
 
   const handleClear = async () => {
     await clearAllData();
+    update({ storeName: '' });
     await refresh();
     setConfirmClear(false);
     toast.success('Semua data dihapus');
+  };
+
+  const handleStoreNameSave = () => {
+    update({ storeName: storeName.trim() });
+    toast.success('Nama toko disimpan');
   };
 
   return (
@@ -116,6 +128,33 @@ export const SettingsPanel = () => {
             />
           </div>
         </div>
+      </section>
+
+      <section className={cn(cardBase, 'space-y-3 p-4 sm:p-5')} data-testid="store-settings">
+        <div>
+          <span className={labelBase}>Toko</span>
+          <label htmlFor="store-name" className="mt-2 block text-sm font-medium">
+            Nama toko
+          </label>
+          <input
+            id="store-name"
+            value={storeName}
+            onChange={(event) => setStoreName(event.target.value)}
+            placeholder=""
+            autoComplete="organization"
+            data-testid="store-name-input"
+            className={cn(inputBase, 'mt-2 h-11')}
+          />
+          <p className="mt-2 text-xs text-muted-foreground">Nama toko akan digunakan pada nota dan saat membagikan nota.</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleStoreNameSave}
+          data-testid="save-store-name-btn"
+          className={cn(btnPrimary, btnSize.sm, 'w-fit')}
+        >
+          Simpan
+        </button>
       </section>
 
       <section className={cn(cardBase, 'space-y-3 p-4 sm:p-5')}>
@@ -204,7 +243,7 @@ export const SettingsPanel = () => {
         open={confirmClear}
         onOpenChange={setConfirmClear}
         title="Hapus semua data?"
-        description="Seluruh nota dan draft di perangkat ini akan dihapus permanen."
+         description="Semua nota, nama toko, dan draft di perangkat ini akan dihapus permanen."
         confirmLabel="Hapus semua"
         onConfirm={handleClear}
         testId="confirm-delete-all"

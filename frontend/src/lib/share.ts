@@ -1,5 +1,7 @@
 import { formatNumber, formatQuantity } from '@/lib/currency';
+import { createReceiptPdf, downloadPdf } from '@/lib/pdf';
 import type { Note } from '@/types/note';
+import type { PrintSize } from '@/types/note';
 
 const WIDTH = 32;
 const DIVIDER = '─'.repeat(WIDTH);
@@ -17,8 +19,10 @@ export function itemLabel(name: string, quantity: number, unitPrice: number): st
   return `${name} ${formatQuantity(quantity)} × ${formatNumber(unitPrice)}`;
 }
 
-export function buildNoteText(note: Note): string {
+export function buildNoteText(note: Note, storeName = ''): string {
   const lines: string[] = ['NOTA', ''];
+
+  if (storeName.trim()) lines.push(storeName.trim(), '');
 
   note.items.forEach((item) => {
     if (item.subtotal < 0) {
@@ -86,17 +90,35 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed';
+export type ShareOutcome = 'shared' | 'downloaded' | 'copied' | 'cancelled' | 'failed';
 
-export async function shareNote(note: Note): Promise<ShareOutcome> {
-  const text = buildNoteText(note);
+export async function shareNote(note: Note, storeName = '', printSize: PrintSize = 'a4'): Promise<ShareOutcome> {
+  const text = buildNoteText(note, storeName);
+  let pdf;
+  try {
+    pdf = createReceiptPdf(note, { storeName, printSize });
+  } catch {
+    return 'failed';
+  }
+
   if (typeof navigator.share === 'function') {
     try {
-      await navigator.share({ title: 'Nota', text });
-      return 'shared';
+      const file = new File([pdf.blob], pdf.fileName, { type: 'application/pdf' });
+      const shareData = { files: [file], title: 'Nota', text: storeName.trim() ? `Nota dari ${storeName.trim()}` : text };
+      const canShareFiles = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
+      if (canShareFiles) {
+        await navigator.share(shareData);
+        return 'shared';
+      }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
     }
   }
-  return (await copyText(text)) ? 'copied' : 'failed';
+
+  try {
+    downloadPdf(pdf);
+    return 'downloaded';
+  } catch {
+    return 'failed';
+  }
 }

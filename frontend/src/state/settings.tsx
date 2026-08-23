@@ -33,6 +33,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(() => ({
     theme: bootTheme(),
     printSize: localStorage.getItem(PRINT_KEY) === 'thermal' ? 'thermal' : 'a4',
+    storeName: '',
   }));
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => resolve(bootTheme()));
 

@@ -13,6 +13,7 @@ import { deleteMeta, deleteNote, getMeta, getNote, saveNote, setMeta } from '@/l
 import { btnOutline, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 import { draftReducer, emptyDraft } from '@/state/draft';
+import { useSettings } from '@/state/settings';
 import type { DraftState } from '@/state/draft';
 
 const DRAFT_KEY = 'draft';
@@ -20,6 +21,7 @@ const DRAFT_KEY = 'draft';
 export default function NewNote() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const [draft, dispatch] = useReducer(draftReducer, emptyDraft);
   const [ready, setReady] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -84,7 +86,7 @@ export default function NewNote() {
   };
 
   const handleCopy = async () => {
-    const ok = await copyText(buildNoteText(currentNote()));
+    const ok = await copyText(buildNoteText(currentNote(), settings.storeName));
     if (ok) toast.success('Teks nota disalin');
     else toast.error('Gagal menyalin nota');
   };
@@ -104,6 +106,17 @@ export default function NewNote() {
     toast.success('Nota dihapus');
     navigate('/');
   };
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen">
+        <AppHeader />
+        <main className="mx-auto w-full max-w-2xl px-4 pb-16 pt-8 md:px-8" data-testid="note-loading">
+          <p className="font-mono text-sm text-muted-foreground">Memuat nota…</p>
+        </main>
+      </div>
+    );
+  }
 
   const actionProps = {
     total: totals.total,
@@ -151,6 +164,7 @@ export default function NewNote() {
             totals={totals}
             discount={draft.discount}
             note={draft.note}
+            storeName={settings.storeName}
             createdAt={draft.createdAt}
             inputRef={inputRef}
             onAddItems={(parsed) => dispatch({ type: 'add', parsed })}

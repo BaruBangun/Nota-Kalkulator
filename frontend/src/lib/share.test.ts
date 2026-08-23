@@ -41,4 +41,22 @@ describe('buildNoteText negative item support', () => {
     // The printed total should be the absolute total formatted
     expect(text).toContain(formatNumber(Math.abs(note.total)));
   });
+
+  it('menampilkan nama toko hanya jika dikonfigurasi', () => {
+    const note: Note = {
+      id: 'test-2',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      items: [],
+      subtotal: 0,
+      discount: { type: 'none', value: 0 },
+      discountAmount: 0,
+      total: 0,
+      note: '',
+    };
+
+    expect(buildNoteText(note, ' TOKO MAKMUR ')).toContain('TOKO MAKMUR');
+    expect(buildNoteText(note, '   ')).not.toContain('TOKO MAKMUR');
+    expect(buildNoteText(note, '')).not.toContain('Nama Toko');
+  });
 });

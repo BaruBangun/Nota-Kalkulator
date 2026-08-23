@@ -122,4 +122,5 @@ export async function saveSettings(settings: Settings): Promise<void> {
 export async function clearAllData(): Promise<void> {
   await clearNotes();
   await deleteMeta('draft');
+  await deleteMeta('settings');
 }

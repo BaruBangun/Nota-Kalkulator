@@ -14,6 +14,7 @@ interface Props {
   totals: Totals;
   discount: Discount;
   note: string;
+  storeName?: string;
   createdAt?: string | null;
   readOnly?: boolean;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
@@ -31,6 +32,7 @@ export const NotePreview = ({
   totals,
   discount,
   note,
+  storeName = '',
   createdAt,
   readOnly = false,
   inputRef,
@@ -54,6 +56,12 @@ export const NotePreview = ({
       </div>
 
       <div className="dashed-rule mt-4" />
+
+      {storeName.trim() && (
+        <div className="pb-2 pt-4 text-center" data-testid="receipt-store-name">
+          <p className="font-mono text-base font-semibold uppercase tracking-[0.12em]">{storeName.trim()}</p>
+        </div>
+      )}
 
       {items.length === 0 && readOnly ? (
         <div className="py-10 text-center">

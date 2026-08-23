@@ -12,10 +12,12 @@ import { shareNote } from '@/lib/share';
 import { deleteNote, listNotes, saveNote } from '@/lib/storage';
 import { btnPrimary, btnSize, cardBase } from '@/lib/styles';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/state/settings';
 import type { Note } from '@/types/note';
 
 export default function History() {
   const navigate = useNavigate();
+  const { settings } = useSettings();
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Note | null>(null);
 
@@ -36,9 +38,10 @@ export default function History() {
   };
 
   const handleShare = async (note: Note) => {
-    const outcome = await shareNote(note);
+    const outcome = await shareNote(note, settings.storeName, settings.printSize);
     if (outcome === 'copied') toast.success('Nota disalin ke clipboard');
-    if (outcome === 'failed') toast.error('Gagal membagikan nota');
+    if (outcome === 'downloaded') toast.success('PDF diunduh karena perangkat ini tidak mendukung berbagi file langsung.');
+    if (outcome === 'failed') toast.error('PDF gagal dibuat. Coba lagi.');
   };
 
   const handleDelete = async () => {
@@ -66,7 +69,11 @@ export default function History() {
         </div>
 
         <div className="mt-7">
-          {notes !== null && notes.length === 0 ? (
+          {notes === null ? (
+            <div className="py-10 text-center" data-testid="history-loading">
+              <p className="font-mono text-sm text-muted-foreground">Memuat riwayat…</p>
+            </div>
+          ) : notes.length === 0 ? (
             <div className={cn(cardBase, 'flex flex-col items-start gap-4 p-6')} data-testid="history-empty">
               <Receipt className="h-8 w-8 text-muted-foreground" />
               <div>

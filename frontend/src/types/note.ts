@@ -32,11 +32,13 @@ export type PrintSize = 'a4' | 'thermal';
 export interface Settings {
   theme: ThemeMode;
   printSize: PrintSize;
+  storeName: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   printSize: 'a4',
+  storeName: '',
 };
 
 export const NO_DISCOUNT: Discount = { type: 'none', value: 0 };

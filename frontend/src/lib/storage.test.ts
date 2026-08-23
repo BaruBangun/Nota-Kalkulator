@@ -4,6 +4,7 @@ import { parseTransactionLine } from '@/lib/parser';
 import { parseBackup } from '@/lib/export';
 import {
   clearAllData,
+  deleteMeta,
   deleteNote,
   getNote,
   getSettings,
@@ -26,6 +27,7 @@ function items(...lines: string[]): NoteItem[] {
 describe('IndexedDB storage', () => {
   beforeEach(async () => {
     await clearAllData();
+    await deleteMeta('settings');
   });
 
   it('simpan lalu baca kembali nota', async () => {
@@ -67,16 +69,41 @@ describe('IndexedDB storage', () => {
   });
 
   it('menyimpan pengaturan', async () => {
-    await saveSettings({ theme: 'dark', printSize: 'thermal' });
-    expect(await getSettings()).toEqual({ theme: 'dark', printSize: 'thermal' });
+    await saveSettings({ theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
+    expect(await getSettings()).toEqual({ theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
+  });
+
+  it('nama toko kosong secara default dan dapat dihapus', async () => {
+    expect((await getSettings()).storeName).toBe('');
+    await saveSettings({ theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
+    await saveSettings({ theme: 'light', printSize: 'a4', storeName: '' });
+    expect((await getSettings()).storeName).toBe('');
+  });
+
+  it('hapus semua data menghapus nota, draft, dan nama toko', async () => {
+    await saveSettings({ theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
+    await saveNote(buildNote({ items: items('Barang 10'), discount: NO_DISCOUNT, note: '' }));
+    await clearAllData();
+
+    expect(await listNotes()).toHaveLength(0);
+    expect((await getSettings()).storeName).toBe('');
   });
 });
 
 describe('backup', () => {
   it('parseBackup menerima file valid', () => {
     const note = buildNote({ items: items('A 10'), discount: NO_DISCOUNT, note: '' });
-    const raw = JSON.stringify({ app: 'notakalk', version: 1, exportedAt: '', notes: [note] });
-    expect(parseBackup(raw).notes).toHaveLength(1);
+    const raw = JSON.stringify({
+      app: 'notakalk',
+      version: 1,
+      exportedAt: '',
+      notes: [note],
+      settings: { theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' },
+    });
+    expect(parseBackup(raw)).toMatchObject({
+      notes: [note],
+      settings: { storeName: 'TOKO MAKMUR' },
+    });
   });
 
   it('parseBackup menolak file asing', () => {

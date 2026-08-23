@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <title>NotaKalk — Kalkulator Nota</title>
+        <meta
+            name="description"
+            content="Kalkulator yang terasa seperti nota digital. Ketik Beras 4x40, tekan Enter, selesai. Bekerja offline, data tersimpan di perangkat Anda."
+        />
+        <meta
+            name="theme-color"
+            media="(prefers-color-scheme: light)"
+            content="#f6f5f2"
+        />
+        <meta
+            name="theme-color"
+            media="(prefers-color-scheme: dark)"
+            content="#0d1424"
+        />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="NotaKalk" />
+        <meta
+            name="apple-mobile-web-app-status-bar-style"
+            content="black-translucent"
+        />
+        <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <script>
+            try {
+                var t = localStorage.getItem("notakalk.theme") || "system";
+                var dark =
+                    t === "dark" ||
+                    (t === "system" &&
+                        window.matchMedia("(prefers-color-scheme: dark)")
+                            .matches);
+                document.documentElement.classList.toggle("dark", dark);
+                var p = localStorage.getItem("notakalk.printSize") || "a4";
+                document.documentElement.setAttribute("data-print", p);
+            } catch (e) {}
+        </script>
+        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+    </head>
+    <body>
+        <noscript>Aktifkan JavaScript untuk menjalankan NotaKalk.</noscript>
+        <div id="root"></div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
+</html>

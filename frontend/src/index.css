@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 40 22% 97%;
+        --foreground: 222 33% 11%;
+        --card: 0 0% 100%;
+        --card-foreground: 222 33% 11%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222 33% 11%;
+        --primary: 224 76% 48%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 38 16% 92%;
+        --secondary-foreground: 222 33% 14%;
+        --muted: 38 14% 93%;
+        --muted-foreground: 220 10% 42%;
+        --accent: 38 16% 91%;
+        --accent-foreground: 222 33% 14%;
+        --destructive: 0 72% 47%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 36 14% 86%;
+        --input: 36 14% 84%;
+        --ring: 224 76% 48%;
+        --paper: 48 56% 97%;
+        --paper-foreground: 222 30% 14%;
+        --paper-muted: 220 12% 45%;
+        --paper-line: 40 18% 80%;
+        --radius: 1rem;
+    }
+
+    .dark {
+        --background: 222 44% 8%;
+        --foreground: 210 22% 96%;
+        --card: 222 32% 13%;
+        --card-foreground: 210 22% 96%;
+        --popover: 222 32% 13%;
+        --popover-foreground: 210 22% 96%;
+        --primary: 217 90% 61%;
+        --primary-foreground: 222 47% 8%;
+        --secondary: 220 24% 18%;
+        --secondary-foreground: 210 22% 96%;
+        --muted: 220 24% 17%;
+        --muted-foreground: 216 14% 68%;
+        --accent: 220 24% 20%;
+        --accent-foreground: 210 22% 96%;
+        --destructive: 0 72% 62%;
+        --destructive-foreground: 222 47% 8%;
+        --border: 219 22% 24%;
+        --input: 219 22% 26%;
+        --ring: 217 90% 61%;
+        --paper: 221 30% 12%;
+        --paper-foreground: 210 20% 94%;
+        --paper-muted: 216 14% 66%;
+        --paper-line: 219 20% 30%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        margin: 0;
+        overscroll-behavior-y: none;
+    }
+
+    ::selection {
+        background-color: hsl(var(--primary) / 0.2);
+    }
+
+    :focus-visible {
+        outline: none;
+    }
+
+    input,
+    textarea,
+    button {
+        font-family: inherit;
+    }
+}
+
+@layer components {
+    .tabular {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Kertas nota: tekstur halus + tepi bergerigi di bawah */
+    .paper-grain {
+        background-image: radial-gradient(
+            hsl(var(--paper-foreground) / 0.055) 0.5px,
+            transparent 0.6px
+        );
+        background-size: 7px 7px;
+    }
+
+    .paper-edge {
+        height: 10px;
+        background-color: hsl(var(--paper));
+        -webkit-mask-image: radial-gradient(
+            circle at 8px 10px,
+            transparent 8px,
+            black 8.5px
+        );
+        mask-image: radial-gradient(
+            circle at 8px 10px,
+            transparent 8px,
+            black 8.5px
+        );
+        -webkit-mask-size: 16px 10px;
+        mask-size: 16px 10px;
+        -webkit-mask-repeat: repeat-x;
+        mask-repeat: repeat-x;
+    }
+
+    .glass {
+        background-color: hsl(var(--background) / 0.82);
+        backdrop-filter: blur(18px) saturate(140%);
+        -webkit-backdrop-filter: blur(18px) saturate(140%);
+    }
+
+    .dock-safe {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .dashed-rule {
+        border-top: 1px dashed hsl(var(--paper-line));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media print {
+    html,
+    body {
+        background: #fff !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .receipt-print {
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: #fff !important;
+        color: #000 !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+    }
+
+    .receipt-print * {
+        color: #000 !important;
+        background: transparent !important;
+    }
+
+    .paper-grain {
+        background-image: none !important;
+    }
+
+    .paper-edge {
+        display: none !important;
+    }
+
+    html[data-print="thermal"] .receipt-print {
+        width: 72mm !important;
+        font-size: 11px !important;
+        padding: 0 !important;
+    }
+
+    @page {
+        margin: 12mm;
+    }
+}

@@ -1,0 +1,119 @@
+{
+  "theme_strategy": "System + Toggle (Light/Dark). PWA-first, mobile-first.",
+  "typography": {
+    "fonts": {
+      "heading": "Work Sans, sans-serif",
+      "body": "Work Sans, sans-serif",
+      "mono": "IBM Plex Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-3xl sm:text-4xl tracking-tight font-bold",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-semibold",
+      "h3": "text-xl sm:text-2xl tracking-tight font-medium",
+      "body": "text-base leading-relaxed",
+      "receipt_text": "text-sm sm:text-base font-mono leading-tight tabular-nums"
+    },
+    "rules": [
+      "NEVER use generic fonts like Inter, Roboto for headings.",
+      "Enable tabular-nums globally for numbers, especially in the receipt preview.",
+      "Keep text high contrast (WCAG AA compliant)."
+    ]
+  },
+  "colors": {
+    "archetype": "Swiss & High-Contrast mixed with Soft Utility",
+    "light": {
+      "background": "#F9FAFB",
+      "surface": "#FFFFFF",
+      "primary": "#2563EB",
+      "primary_foreground": "#FFFFFF",
+      "text": "#111827",
+      "text_muted": "#6B7280",
+      "border": "#E5E7EB",
+      "receipt_bg": "#FEFCE8",
+      "receipt_text": "#1F2937",
+      "danger": "#EF4444"
+    },
+    "dark": {
+      "background": "#0F172A",
+      "surface": "#1E293B",
+      "primary": "#3B82F6",
+      "primary_foreground": "#FFFFFF",
+      "text": "#F9FAFB",
+      "text_muted": "#9CA3AF",
+      "border": "#334155",
+      "receipt_bg": "#1E293B",
+      "receipt_text": "#F3F4F6",
+      "danger": "#F87171"
+    },
+    "rules": [
+      "Use CSS variables for theming to easily toggle light/dark.",
+      "Do NOT use generic gradients. Keep colors flat and functional.",
+      "Ensure all text has at least a 4.5:1 contrast ratio.",
+      "Primary button should have clear active/hover states (e.g., hover:bg-blue-700 hover:text-white)."
+    ]
+  },
+  "visual_enhancers": {
+    "borders": "1px solid border (light/dark adaptive). Do not use soft muddy shadows.",
+    "radii": "rounded-xl for cards, rounded-full for pills/floating buttons.",
+    "shadows": "Minimalist ambient shadow (shadow-sm) for cards, slightly elevated (shadow-md) for floating bottom bars.",
+    "glassmorphism": "Use backdrop-blur-xl bg-white/80 (light) or bg-slate-900/80 (dark) ONLY for sticky headers or floating bottom docks, ensuring text is perfectly readable. NEVER use transparent backgrounds behind text."
+  },
+  "components": {
+    "input_area": "Large, easily tappable input field. Must have autofocus. Pressing Enter adds the item, clears input, and maintains focus.",
+    "receipt_preview": "Container that looks like a physical receipt. Use mono font, dashed borders (border-dashed) for dividers, right-aligned numbers. Highlight the TOTAL in a larger size.",
+    "row_actions": "Swipe gestures if possible, or a simple ⋮ (kebab menu) triggering a small dropdown (Edit, Duplicate, Delete, Move Up/Down). Touch targets must be at least 44px.",
+    "bottom_action_bar": "Sticky bottom dock/pill on mobile with primary actions (Save, Share, Print).",
+    "toast": "Use a minimal toast notification (like sonner) for error handling ('Format belum dikenali') or success ('Nota disalin')."
+  },
+  "grids_and_layouts": {
+    "mobile": "Single column. Sticky header -> Input area -> Scrollable Receipt Preview -> Sticky Bottom Action Bar. Use generous padding (p-4 to p-6).",
+    "desktop": "Two columns. Left column: Input and Actions. Right column: Sticky Receipt Preview. Use grid-cols-1 md:grid-cols-2 gap-8."
+  },
+  "motion": {
+    "rules": [
+      "Keep it snappy. Fast > Beautiful.",
+      "Add a subtle entrance animation (fade-in + slight slide-up) for new items added to the receipt.",
+      "Use micro-interactions for button press (scale down slightly, e.g., active:scale-95).",
+      "Must respect prefers-reduced-motion."
+    ]
+  },
+  "accessibility": {
+    "rules": [
+      "Semantic HTML tags (header, main, footer, section).",
+      "All interactive elements must have min 44x44px touch targets.",
+      "Use aria-labels for icon-only buttons (like the ⋮ menu).",
+      "Provide clear focus rings (focus:ring-2 focus:ring-primary) for keyboard navigation.",
+      "ALL interactive and key informational elements MUST include a data-testid attribute in kebab-case."
+    ]
+  },
+  "media": {
+    "print_css": "Include specific print styles (@media print) that hides UI elements (input, buttons, headers) and formats the receipt preview to fill the page (A4) or fit a thermal printer width (80mm). Remove backgrounds, ensure text is black.",
+    "icons": "Use lucide-react. Simple, consistent stroke weights.",
+    "pwa": "Ensure manifest.json is configured correctly for standalone mode."
+  },
+  "instructions_to_main_agent": {
+    "architecture": "Build a React + Vite + Tailwind application. Keep it strictly client-side (IndexedDB for storage). Fast initial load. The project uses .js/.jsx files (not .tsx) as strictly requested, adapt all code to JavaScript.",
+    "ux_flow": "The core loop 'Open -> Type -> Enter -> Type -> Enter' MUST be frictionless. The input field must immediately regain focus after Enter.",
+    "parser_logic": "Implement a robust but forgiving regex/parser to extract Item Name, Quantity, and Price from a single string. (e.g., 'Beras 4x40' -> Name: Beras, Qty: 4, Price: 40). Display format must drop 'Rp' and use Indonesian thousand separators.",
+    "state_management": "Use lightweight state management to manage the current receipt items, history, and settings.",
+    "testing_hooks": "Strictly add data-testid attributes (e.g., data-testid='input-transaction', data-testid='add-item-btn', data-testid='receipt-total')."
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: transition: all. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file. This disrupts the human natural reading flow of text.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Create new components that match the style and conventions of existing components when needed.",
+    "Examine existing components to understand the project's component patterns before creating new ones.",
+    "Use sonner for toasts. Sonner component are located in /app/src/components/ui/sonner.jsx or .js (since TS is not used)."
+  ]
+}

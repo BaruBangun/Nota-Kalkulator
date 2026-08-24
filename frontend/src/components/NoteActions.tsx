@@ -1,4 +1,4 @@
-import { ClipboardCopy, FilePlus2, MoreHorizontal, Plus, Printer, Save, Trash2 } from 'lucide-react';
+import { ClipboardCopy, FileDown, FilePlus2, MoreHorizontal, Plus, Printer, Save, Trash2 } from 'lucide-react';
 import { ShareButton } from '@/components/ShareButton';
 import {
   DropdownMenu,
@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/primitives';
 import { formatNumber } from '@/lib/currency';
-import { btnOutline, btnSecondary, btnSize } from '@/lib/styles';
+import { btnOutline, btnPrimary, btnSecondary, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 import type { Note } from '@/types/note';
 
@@ -21,11 +21,12 @@ export interface NoteActionsProps {
   onSave: () => void;
   onCopy: () => void;
   onPrint: () => void;
+  onSavePdf: () => void;
   onNew: () => void;
   onDelete?: () => void;
 }
 
-const MoreMenu = ({ onCopy, onPrint, onNew, onDelete, isSaved, suffix }: NoteActionsProps & { suffix: string }) => (
+const MoreMenu = ({ onCopy, onPrint, onSavePdf, onNew, onDelete, isSaved, suffix }: NoteActionsProps & { suffix: string }) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <button
@@ -39,10 +40,13 @@ const MoreMenu = ({ onCopy, onPrint, onNew, onDelete, isSaved, suffix }: NoteAct
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" className="w-48">
       <DropdownMenuItem onClick={onCopy} data-testid={`copy-note-${suffix}`}>
-        <ClipboardCopy className="h-4 w-4" /> Salin Nota
+        <ClipboardCopy className="h-4 w-4" /> Copy teks nota
       </DropdownMenuItem>
       <DropdownMenuItem onClick={onPrint} data-testid={`print-note-${suffix}`}>
         <Printer className="h-4 w-4" /> Print
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={onSavePdf} data-testid={`save-pdf-${suffix}`}>
+        <FileDown className="h-4 w-4" /> Simpan sebagai PDF
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onNew} data-testid={`new-note-${suffix}`}>
@@ -61,27 +65,8 @@ const MoreMenu = ({ onCopy, onPrint, onNew, onDelete, isSaved, suffix }: NoteAct
   </DropdownMenu>
 );
 
-const CopyButton = ({ onCopy, disabled, label = 'Salin Nota', testId, className }: {
-  onCopy: () => void;
-  disabled: boolean;
-  label?: string;
-  testId: string;
-  className?: string;
-}) => (
-  <button
-    type="button"
-    onClick={onCopy}
-    disabled={disabled}
-    data-testid={testId}
-    className={cn(btnOutline, btnSize.md, className)}
-  >
-    <ClipboardCopy className="h-4 w-4 shrink-0" />
-    <span className="truncate">{label}</span>
-  </button>
-);
-
 export const NoteActions = (props: NoteActionsProps) => {
-  const { itemCount, isSaved, getNote, onSave, onCopy } = props;
+  const { itemCount, isSaved, getNote, onSave } = props;
   return (
     <div className="no-print flex flex-wrap items-center gap-2" data-testid="note-actions">
       <button
@@ -89,20 +74,19 @@ export const NoteActions = (props: NoteActionsProps) => {
         onClick={onSave}
         disabled={!itemCount}
         data-testid="save-note-btn"
-        className={cn(btnSecondary, btnSize.md, 'min-w-[130px]')}
+        className={cn(btnPrimary, btnSize.md, 'min-w-[130px]')}
       >
         <Save className="h-4 w-4" />
         {isSaved ? 'Perbarui' : 'Simpan'}
       </button>
       <ShareButton getNote={getNote} disabled={!itemCount} />
-      <CopyButton onCopy={onCopy} disabled={!itemCount} testId="copy-note-btn" />
       <MoreMenu {...props} suffix="inline" />
     </div>
   );
 };
 
 export const ActionDock = (props: NoteActionsProps) => {
-  const { total, itemCount, isSaved, getNote, onFocusInput, onSave, onCopy } = props;
+  const { total, itemCount, isSaved, getNote, onFocusInput, onSave } = props;
   return (
     <div
       className="no-print dock-safe fixed inset-x-0 bottom-0 z-30 border-t border-border glass px-4 pt-3 md:hidden"
@@ -130,7 +114,7 @@ export const ActionDock = (props: NoteActionsProps) => {
           onClick={onSave}
           disabled={!itemCount}
           data-testid="save-note-dock-btn"
-          className={cn(btnSecondary, btnSize.md, 'min-w-0 flex-1 px-2 text-xs')}
+          className={cn(btnPrimary, btnSize.md, 'min-w-0 flex-1 px-2 text-xs')}
         >
           <Save className="h-4 w-4" />
           {isSaved ? 'Perbarui' : 'Simpan'}
@@ -140,13 +124,6 @@ export const ActionDock = (props: NoteActionsProps) => {
           disabled={!itemCount}
           testId="share-dock-btn"
           label="Bagikan"
-          className="min-w-0 flex-1 px-2 text-xs"
-        />
-        <CopyButton
-          onCopy={onCopy}
-          disabled={!itemCount}
-          label="Salin"
-          testId="copy-note-dock-btn"
           className="min-w-0 flex-1 px-2 text-xs"
         />
         <MoreMenu {...props} suffix="dock" />

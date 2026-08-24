@@ -39,7 +39,7 @@ export default function History() {
 
   const handleShare = async (note: Note) => {
     const outcome = await shareNote(note, settings.storeName);
-    if (outcome === 'copied') toast.success('Nota disalin ke clipboard');
+    if (outcome === 'copied') toast.success('Nota berhasil disalin');
     if (outcome === 'failed') toast.error('Nota gagal disalin. Coba lagi.');
   };
 

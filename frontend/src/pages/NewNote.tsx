@@ -9,6 +9,7 @@ import { NoteMemo } from '@/components/NoteMemo';
 import { NotePreview } from '@/components/NotePreview';
 import { buildNote, computeTotals } from '@/lib/calculator';
 import { buildNoteText, copyText } from '@/lib/share';
+import { createReceiptPdf, downloadPdf } from '@/lib/pdf';
 import { deleteMeta, deleteNote, getMeta, getNote, saveNote, setMeta } from '@/lib/storage';
 import { btnOutline, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
@@ -87,8 +88,21 @@ export default function NewNote() {
 
   const handleCopy = async () => {
     const ok = await copyText(buildNoteText(currentNote(), settings.storeName));
-    if (ok) toast.success('Teks nota disalin');
+    if (ok) toast.success('Nota berhasil disalin');
     else toast.error('Gagal menyalin nota');
+  };
+
+  const handleSavePdf = () => {
+    try {
+      const file = createReceiptPdf(currentNote(), {
+        storeName: settings.storeName,
+        printSize: settings.printSize,
+      });
+      downloadPdf(file);
+      toast.success('PDF disimpan');
+    } catch {
+      toast.error('PDF gagal dibuat. Coba lagi.');
+    }
   };
 
   const handleNew = () => {
@@ -127,6 +141,7 @@ export default function NewNote() {
     onSave: handleSave,
     onCopy: handleCopy,
     onPrint: () => window.print(),
+    onSavePdf: handleSavePdf,
     onNew: handleNew,
     onDelete: () => setConfirmDelete(true),
   };

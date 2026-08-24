@@ -38,10 +38,9 @@ export default function History() {
   };
 
   const handleShare = async (note: Note) => {
-    const outcome = await shareNote(note, settings.storeName, settings.printSize);
+    const outcome = await shareNote(note, settings.storeName);
     if (outcome === 'copied') toast.success('Nota disalin ke clipboard');
-    if (outcome === 'downloaded') toast.success('PDF diunduh karena perangkat ini tidak mendukung berbagi file langsung.');
-    if (outcome === 'failed') toast.error('PDF gagal dibuat. Coba lagi.');
+    if (outcome === 'failed') toast.error('Nota gagal disalin. Coba lagi.');
   };
 
   const handleDelete = async () => {

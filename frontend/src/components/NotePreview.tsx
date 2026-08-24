@@ -41,8 +41,16 @@ export const NotePreview = ({
   onDuplicateItem = noop,
   onRemoveItem = noop,
   onMoveItem = noop,
-}: Props) => (
-  <div className="relative" data-testid="note-preview">
+}: Props) => {
+  const payment = items.reduce((sum, item) => (item.subtotal < 0 ? sum + Math.abs(item.subtotal) : sum), 0);
+  const hasPayment = payment > 0;
+  // Payment is stored as a negative item; add it back to the engine result to show the payable total.
+  const payableTotal = Math.max(totals.total + payment, 0);
+  const displayTotal = hasPayment ? payableTotal : totals.total;
+  const change = hasPayment ? payment - payableTotal : 0;
+
+  return (
+    <div className="relative" data-testid="note-preview">
     <div
       className={cn(
         'receipt-print paper-grain rounded-t-lg border border-b-0 border-border bg-paper px-5 pb-4 pt-5 text-paper-foreground shadow-sm sm:px-6',
@@ -102,12 +110,18 @@ export const NotePreview = ({
         )}
         <div className="mt-2 border-t-[3px] border-double border-paper-line">
           <TotalDisplay
-            label={totals.total < 0 ? 'Kembali' : 'Total'}
-            value={Math.abs(totals.total)}
+            label="Total"
+            value={Math.abs(displayTotal)}
             emphasis
             testId="receipt-total"
           />
         </div>
+        {hasPayment && (
+          <>
+            <TotalDisplay label="Dibayar" value={payment} testId="receipt-paid" />
+            {change > 0 && <TotalDisplay label="Kembali" value={change} testId="receipt-change" />}
+          </>
+        )}
       </div>
 
       {note.trim() && (
@@ -123,4 +137,5 @@ export const NotePreview = ({
     </div>
     <div className="paper-edge no-print" aria-hidden="true" />
   </div>
-);
+  );
+};

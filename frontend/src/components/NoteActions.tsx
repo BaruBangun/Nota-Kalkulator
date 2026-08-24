@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/primitives';
 import { formatNumber } from '@/lib/currency';
-import { btnOutline, btnPrimary, btnSecondary, btnSize } from '@/lib/styles';
+import { btnOutline, btnSecondary, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 import type { Note } from '@/types/note';
 
@@ -39,7 +39,7 @@ const MoreMenu = ({ onCopy, onPrint, onNew, onDelete, isSaved, suffix }: NoteAct
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end" className="w-48">
       <DropdownMenuItem onClick={onCopy} data-testid={`copy-note-${suffix}`}>
-        <ClipboardCopy className="h-4 w-4" /> Copy teks nota
+        <ClipboardCopy className="h-4 w-4" /> Salin Nota
       </DropdownMenuItem>
       <DropdownMenuItem onClick={onPrint} data-testid={`print-note-${suffix}`}>
         <Printer className="h-4 w-4" /> Print
@@ -70,7 +70,7 @@ export const NoteActions = (props: NoteActionsProps) => {
         onClick={onSave}
         disabled={!itemCount}
         data-testid="save-note-btn"
-        className={cn(btnPrimary, btnSize.md, 'min-w-[130px]')}
+        className={cn(btnSecondary, btnSize.md, 'min-w-[130px]')}
       >
         <Save className="h-4 w-4" />
         {isSaved ? 'Perbarui' : 'Simpan'}
@@ -110,7 +110,7 @@ export const ActionDock = (props: NoteActionsProps) => {
           onClick={onSave}
           disabled={!itemCount}
           data-testid="save-note-dock-btn"
-          className={cn(btnPrimary, btnSize.md, 'flex-1')}
+          className={cn(btnSecondary, btnSize.md, 'flex-1')}
         >
           <Save className="h-4 w-4" />
           {isSaved ? 'Perbarui' : 'Simpan'}

@@ -1,51 +1,44 @@
 import { formatNumber, formatQuantity } from '@/lib/currency';
-import { createReceiptPdf, downloadPdf } from '@/lib/pdf';
 import type { Note } from '@/types/note';
-import type { PrintSize } from '@/types/note';
 
-const WIDTH = 32;
-const DIVIDER = '─'.repeat(WIDTH);
-
-function row(label: string, value: string, width = WIDTH): string {
-  const space = Math.max(width - label.length - value.length, 1);
-  if (space === 1 && label.length + value.length + 1 > width) {
-    return `${label}\n${' '.repeat(Math.max(width - value.length, 0))}${value}`;
-  }
-  return `${label}${' '.repeat(space)}${value}`;
-}
-
-export function itemLabel(name: string, quantity: number, unitPrice: number): string {
-  if (quantity === 1) return name;
-  return `${name} ${formatQuantity(quantity)} × ${formatNumber(unitPrice)}`;
+function receiptNumber(createdAt: string): string {
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return '000000000000';
+  const pad = (value: number) => String(value).padStart(2, '0');
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}${pad(date.getHours())}${pad(date.getMinutes())}`;
 }
 
 export function buildNoteText(note: Note, storeName = ''): string {
-  const lines: string[] = ['NOTA', ''];
+  const lines: string[] = [];
 
   if (storeName.trim()) lines.push(storeName.trim(), '');
+  lines.push(`🧾 NOTA #${receiptNumber(note.createdAt)}`, '');
+
+  const paid = note.items.reduce((sum, item) => (item.subtotal < 0 ? sum + Math.abs(item.subtotal) : sum), 0);
+  const total = paid > 0 ? Math.max(note.total + paid, 0) : note.total;
 
   note.items.forEach((item) => {
-    if (item.subtotal < 0) {
-      // Tampilkan baris pembayaran/penyesuaian sebagai nilai negatif,
-      // gunakan nama item apa adanya (mis. "dibayar") dan tampilkan
-      // nilai dengan tanda minus di depan.
-      const label = item.name.toUpperCase();
-      const value = `-${formatNumber(Math.abs(item.subtotal))}`;
-      lines.push(row(label, value));
-    } else {
-      lines.push(row(itemLabel(item.name, item.quantity, item.unitPrice), formatNumber(item.subtotal)));
-    }
+    if (item.subtotal < 0) return;
+    lines.push(item.name);
+    lines.push(item.quantity === 1
+      ? `${formatNumber(item.unitPrice)} = ${formatNumber(item.subtotal)}`
+      : `${formatQuantity(item.quantity)} × ${formatNumber(item.unitPrice)} = ${formatNumber(item.subtotal)}`);
+    lines.push('');
   });
 
-  lines.push(DIVIDER);
+  lines.push('──────────────');
 
   if (note.discountAmount > 0) {
-    lines.push(row('Subtotal', formatNumber(note.subtotal)));
-    const label = note.discount.type === 'percent' ? `Diskon ${formatNumber(note.discount.value)}%` : 'Diskon';
-    lines.push(row(label, `-${formatNumber(note.discountAmount)}`));
+    lines.push(`SUBTOTAL: ${formatNumber(total + note.discountAmount)}`);
+    lines.push(`DISKON: -${formatNumber(note.discountAmount)}`);
   }
 
-  lines.push(row(note.total < 0 ? 'KEMBALI' : 'TOTAL', formatNumber(Math.abs(note.total))));
+  lines.push(`TOTAL: ${formatNumber(Math.abs(total))}`);
+  if (paid > 0) {
+    lines.push('', `DIBAYAR: ${formatNumber(paid)}`);
+    const change = paid - total;
+    if (change > 0) lines.push(`KEMBALI: ${formatNumber(change)}`);
+  }
 
   if (note.note) {
     lines.push('', 'Catatan:', note.note);
@@ -90,35 +83,19 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export type ShareOutcome = 'shared' | 'downloaded' | 'copied' | 'cancelled' | 'failed';
+export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed';
 
-export async function shareNote(note: Note, storeName = '', printSize: PrintSize = 'a4'): Promise<ShareOutcome> {
+export async function shareNote(note: Note, storeName = ''): Promise<ShareOutcome> {
   const text = buildNoteText(note, storeName);
-  let pdf;
-  try {
-    pdf = createReceiptPdf(note, { storeName, printSize });
-  } catch {
-    return 'failed';
-  }
 
   if (typeof navigator.share === 'function') {
     try {
-      const file = new File([pdf.blob], pdf.fileName, { type: 'application/pdf' });
-      const shareData = { files: [file], title: 'Nota', text: storeName.trim() ? `Nota dari ${storeName.trim()}` : text };
-      const canShareFiles = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
-      if (canShareFiles) {
-        await navigator.share(shareData);
-        return 'shared';
-      }
+      await navigator.share({ title: 'Nota NotaKalk', text });
+      return 'shared';
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
     }
   }
 
-  try {
-    downloadPdf(pdf);
-    return 'downloaded';
-  } catch {
-    return 'failed';
-  }
+  return (await copyText(text)) ? 'copied' : 'failed';
 }

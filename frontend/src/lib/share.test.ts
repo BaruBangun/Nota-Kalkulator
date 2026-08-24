@@ -3,8 +3,8 @@ import { buildNoteText } from '@/lib/share';
 import { formatNumber } from '@/lib/currency';
 import type { Note } from '@/types/note';
 
-describe('buildNoteText negative item support', () => {
-  it('renders negative item rows and KEMBALI total', () => {
+describe('buildNoteText payment format', () => {
+  it('renders payment as a positive DIBAYAR value', () => {
     const note: Note = {
       id: 'test-1',
       createdAt: new Date().toISOString(),
@@ -28,18 +28,10 @@ describe('buildNoteText negative item support', () => {
 
     const text = buildNoteText(note);
 
-    // Label should be uppercased in the share text
     expect(text).toContain('DIBAYAR');
-
-    // Value should appear with a leading minus and formatted number
-    const expectedValue = `-${formatNumber(Math.abs(note.items[0].subtotal))}`;
-    expect(text).toContain(expectedValue);
-
-    // The total section should use the KEMBALI label for negative totals
-    expect(text).toContain('KEMBALI');
-
-    // The printed total should be the absolute total formatted
-    expect(text).toContain(formatNumber(Math.abs(note.total)));
+    expect(text).toContain(`DIBAYAR: ${formatNumber(Math.abs(note.items[0].subtotal))}`);
+    expect(text).not.toContain(`-${formatNumber(Math.abs(note.items[0].subtotal))}`);
+    expect(text).toContain(`TOTAL: ${formatNumber(0)}`);
   });
 
   it('menampilkan nama toko hanya jika dikonfigurasi', () => {

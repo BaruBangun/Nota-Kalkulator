@@ -99,6 +99,8 @@ export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate,
     );
   }
 
+  const isPayment = item.subtotal < 0;
+
   return (
     <li className="relative overflow-hidden" data-testid={`receipt-item-${index}`}>
       <div
@@ -138,22 +140,21 @@ export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate,
         }}
       >
         <div className="min-w-0 flex-1">
-          <span className="break-words" data-testid={`receipt-item-name-${index}`}>
-            {item.name}
+          <span className={cn('break-words font-medium', isPayment && 'uppercase')} data-testid={`receipt-item-name-${index}`}>
+            {isPayment ? 'Dibayar' : item.name}
           </span>
-          {item.quantity !== 1 && (
-            <span className="text-paper-muted" data-testid={`receipt-item-qty-${index}`}>
-              {' '}
+          {!isPayment && item.quantity !== 1 && (
+            <span className="ml-2 text-[0.8rem] text-paper-muted" data-testid={`receipt-item-qty-${index}`}>
               {formatQuantity(item.quantity)} × {formatNumber(item.unitPrice)}
             </span>
           )}
         </div>
 
         <span
-          className={cn('tabular shrink-0 tracking-tight', item.subtotal < 0 && 'font-semibold text-primary')}
+          className="tabular shrink-0 text-base font-semibold tracking-tight"
           data-testid={`receipt-item-subtotal-${index}`}
         >
-          {formatNumber(item.subtotal)}
+          {formatNumber(Math.abs(item.subtotal))}
         </span>
 
         {!readOnly && (

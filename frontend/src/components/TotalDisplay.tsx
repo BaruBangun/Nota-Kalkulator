@@ -25,7 +25,7 @@ export const TotalDisplay = ({ label, value, emphasis = false, prefix = '', test
     </span>
     <span
       data-testid={testId}
-      className={cn('tabular tracking-tight', emphasis ? 'text-3xl font-semibold sm:text-4xl' : '')}
+      className={cn('tabular tracking-tight', emphasis ? 'text-3xl font-bold sm:text-4xl' : 'font-medium')}
     >
       {prefix}
       {formatNumber(value)}

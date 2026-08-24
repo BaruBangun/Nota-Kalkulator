@@ -110,16 +110,18 @@ describe('buildNoteText', () => {
     const note = buildNote({ items: items('Susu Enak 28', 'Teh Kotak 5', 'Beras 4x40'), discount: NO_DISCOUNT, note: '' });
     const text = buildNoteText(note);
     expect(text).toContain('NOTA');
-    expect(text).toContain('Beras 4 × 40');
-    expect(text).toMatch(/TOTAL\s+193/);
+    expect(text).toContain('Beras');
+    expect(text).toContain('4 × 40 = 160');
+    expect(text).toContain('TOTAL: 193');
   });
 
   it('menampilkan baris diskon bila ada', () => {
     const note = buildNote({ items: items('Barang 1000'), discount: { type: 'percent', value: 10 }, note: 'Bayar sebagian' });
     const text = buildNoteText(note);
-    expect(text).toMatch(/Subtotal\s+1\.000/);
-    expect(text).toMatch(/Diskon 10%\s+-100/);
-    expect(text).toMatch(/TOTAL\s+900/);
+    expect(text).toContain('Barang');
+    expect(text).toContain('SUBTOTAL: 1.000');
+    expect(text).toContain('DISKON: -100');
+    expect(text).toContain('TOTAL: 900');
     expect(text).toContain('Bayar sebagian');
   });
 });

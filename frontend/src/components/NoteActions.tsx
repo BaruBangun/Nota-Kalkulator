@@ -61,8 +61,27 @@ const MoreMenu = ({ onCopy, onPrint, onNew, onDelete, isSaved, suffix }: NoteAct
   </DropdownMenu>
 );
 
+const CopyButton = ({ onCopy, disabled, label = 'Salin Nota', testId, className }: {
+  onCopy: () => void;
+  disabled: boolean;
+  label?: string;
+  testId: string;
+  className?: string;
+}) => (
+  <button
+    type="button"
+    onClick={onCopy}
+    disabled={disabled}
+    data-testid={testId}
+    className={cn(btnOutline, btnSize.md, className)}
+  >
+    <ClipboardCopy className="h-4 w-4 shrink-0" />
+    <span className="truncate">{label}</span>
+  </button>
+);
+
 export const NoteActions = (props: NoteActionsProps) => {
-  const { itemCount, isSaved, getNote, onSave } = props;
+  const { itemCount, isSaved, getNote, onSave, onCopy } = props;
   return (
     <div className="no-print flex flex-wrap items-center gap-2" data-testid="note-actions">
       <button
@@ -76,13 +95,14 @@ export const NoteActions = (props: NoteActionsProps) => {
         {isSaved ? 'Perbarui' : 'Simpan'}
       </button>
       <ShareButton getNote={getNote} disabled={!itemCount} />
+      <CopyButton onCopy={onCopy} disabled={!itemCount} testId="copy-note-btn" />
       <MoreMenu {...props} suffix="inline" />
     </div>
   );
 };
 
 export const ActionDock = (props: NoteActionsProps) => {
-  const { total, itemCount, isSaved, getNote, onFocusInput, onSave } = props;
+  const { total, itemCount, isSaved, getNote, onFocusInput, onSave, onCopy } = props;
   return (
     <div
       className="no-print dock-safe fixed inset-x-0 bottom-0 z-30 border-t border-border glass px-4 pt-3 md:hidden"
@@ -101,7 +121,7 @@ export const ActionDock = (props: NoteActionsProps) => {
           type="button"
           onClick={onFocusInput}
           data-testid="focus-input-btn"
-          className={cn(btnSecondary, btnSize.md, 'flex-1')}
+          className={cn(btnSecondary, btnSize.md, 'min-w-0 flex-1 px-2 text-xs')}
         >
           <Plus className="h-4 w-4" /> Item
         </button>
@@ -110,12 +130,25 @@ export const ActionDock = (props: NoteActionsProps) => {
           onClick={onSave}
           disabled={!itemCount}
           data-testid="save-note-dock-btn"
-          className={cn(btnSecondary, btnSize.md, 'flex-1')}
+          className={cn(btnSecondary, btnSize.md, 'min-w-0 flex-1 px-2 text-xs')}
         >
           <Save className="h-4 w-4" />
           {isSaved ? 'Perbarui' : 'Simpan'}
         </button>
-        <ShareButton getNote={getNote} disabled={!itemCount} testId="share-dock-btn" className="flex-1" />
+        <ShareButton
+          getNote={getNote}
+          disabled={!itemCount}
+          testId="share-dock-btn"
+          label="Bagikan"
+          className="min-w-0 flex-1 px-2 text-xs"
+        />
+        <CopyButton
+          onCopy={onCopy}
+          disabled={!itemCount}
+          label="Salin"
+          testId="copy-note-dock-btn"
+          className="min-w-0 flex-1 px-2 text-xs"
+        />
         <MoreMenu {...props} suffix="dock" />
       </div>
     </div>

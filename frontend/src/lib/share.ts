@@ -1,5 +1,7 @@
 import { formatNumber, formatQuantity } from '@/lib/currency';
+import { createReceiptImage, downloadReceiptImage } from '@/lib/receipt-image';
 import type { Note } from '@/types/note';
+import type { ReceiptImageSettings } from '@/lib/receipt-image';
 
 function receiptNumber(createdAt: string): string {
   const date = new Date(createdAt);
@@ -15,7 +17,7 @@ export function buildNoteText(note: Note, storeName = ''): string {
   lines.push(`🧾 NOTA #${receiptNumber(note.createdAt)}`, '');
 
   const paid = note.items.reduce((sum, item) => (item.subtotal < 0 ? sum + Math.abs(item.subtotal) : sum), 0);
-  const total = paid > 0 ? Math.max(note.total + paid, 0) : note.total;
+  const total = note.total;
 
   note.items.forEach((item) => {
     if (item.subtotal < 0) return;
@@ -35,9 +37,7 @@ export function buildNoteText(note: Note, storeName = ''): string {
 
   lines.push(`TOTAL: ${formatNumber(Math.abs(total))}`);
   if (paid > 0) {
-    lines.push('', `DIBAYAR: ${formatNumber(paid)}`);
-    const change = paid - total;
-    if (change > 0) lines.push(`KEMBALI: ${formatNumber(change)}`);
+    lines.push('', `DIBAYAR: -${formatNumber(paid)}`);
   }
 
   if (note.note) {
@@ -83,19 +83,57 @@ export async function copyText(text: string): Promise<boolean> {
   }
 }
 
-export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed';
+export type ShareOutcome = 'shared' | 'image-copied' | 'downloaded' | 'copied' | 'cancelled' | 'failed';
 
-export async function shareNote(note: Note, storeName = ''): Promise<ShareOutcome> {
+async function copyImage(blob: Blob): Promise<boolean> {
+  try {
+    if (!navigator.clipboard || typeof ClipboardItem === 'undefined' || !window.isSecureContext) return false;
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function shareNote(
+  note: Note,
+  storeName = '',
+  imageSettings?: ReceiptImageSettings,
+): Promise<ShareOutcome> {
   const text = buildNoteText(note, storeName);
+  let image;
+  try {
+    image = await createReceiptImage(note, storeName, imageSettings ?? {
+      imageFont: 'Arial',
+      imageSpacing: 'comfortable',
+      imageGuides: true,
+      imageBackground: '#fffdf7',
+      reductionColor: '#dc2626',
+      totalColor: '#166534',
+    });
+  } catch {
+    return 'failed';
+  }
 
   if (typeof navigator.share === 'function') {
     try {
-      await navigator.share({ title: 'Nota NotaKalk', text });
-      return 'shared';
+      const file = new File([image.blob], image.fileName, { type: 'image/png' });
+      const canShareFiles = typeof navigator.canShare !== 'function' || navigator.canShare({ files: [file] });
+      if (canShareFiles) {
+        await navigator.share({ title: 'Nota NotaKalk', text, files: [file] });
+        return 'shared';
+      }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
     }
   }
 
-  return (await copyText(text)) ? 'copied' : 'failed';
+  if (await copyImage(image.blob)) return 'image-copied';
+
+  try {
+    downloadReceiptImage(image);
+    return 'downloaded';
+  } catch {
+    return 'failed';
+  }
 }

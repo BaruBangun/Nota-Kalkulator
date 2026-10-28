@@ -22,6 +22,7 @@ interface Props {
   onDuplicate: (index: number) => void;
   onRemove: (id: string) => void;
   onMove: (index: number, direction: -1 | 1) => void;
+  reductionColor?: string;
 }
 
 const SWIPE_LIMIT = 132;
@@ -32,7 +33,7 @@ function rawOf(item: NoteItem): string {
   return item.quantity === 1 ? `${item.name} ${item.unitPrice}` : `${item.name} ${item.quantity}x${item.unitPrice}`;
 }
 
-export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate, onRemove, onMove }: Props) => {
+export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate, onRemove, onMove, reductionColor }: Props) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(rawOf(item));
   const [invalid, setInvalid] = useState(false);
@@ -152,9 +153,10 @@ export const NoteItemRow = ({ item, index, count, readOnly, onEdit, onDuplicate,
 
         <span
           className="tabular shrink-0 text-base font-semibold tracking-tight"
+          style={isPayment && reductionColor ? { color: reductionColor } : undefined}
           data-testid={`receipt-item-subtotal-${index}`}
         >
-          {formatNumber(Math.abs(item.subtotal))}
+           {formatNumber(item.subtotal)}
         </span>
 
         {!readOnly && (

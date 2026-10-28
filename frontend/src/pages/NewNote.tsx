@@ -180,6 +180,8 @@ export default function NewNote() {
             discount={draft.discount}
             note={draft.note}
             storeName={settings.storeName}
+            reductionColor={settings.reductionColor}
+            totalColor={settings.totalColor}
             createdAt={draft.createdAt}
             inputRef={inputRef}
             onAddItems={(parsed) => dispatch({ type: 'add', parsed })}

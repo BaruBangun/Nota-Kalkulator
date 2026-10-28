@@ -7,9 +7,10 @@ interface Props {
   emphasis?: boolean;
   prefix?: string;
   testId?: string;
+  color?: string;
 }
 
-export const TotalDisplay = ({ label, value, emphasis = false, prefix = '', testId }: Props) => (
+export const TotalDisplay = ({ label, value, emphasis = false, prefix = '', testId, color }: Props) => (
   <div
     className={cn(
       'flex items-end justify-between gap-4 font-mono',
@@ -26,6 +27,7 @@ export const TotalDisplay = ({ label, value, emphasis = false, prefix = '', test
     <span
       data-testid={testId}
       className={cn('tabular tracking-tight', emphasis ? 'text-3xl font-bold sm:text-4xl' : 'font-medium')}
+      style={color ? { color } : undefined}
     >
       {prefix}
       {formatNumber(value)}

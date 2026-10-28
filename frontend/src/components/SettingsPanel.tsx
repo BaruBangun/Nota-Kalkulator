@@ -9,7 +9,7 @@ import { clearAllData, getSettings, listNotes, putNotes } from '@/lib/storage';
 import { btnDanger, btnOutline, btnPrimary, btnSize, cardBase, inputBase, labelBase } from '@/lib/styles';
 import { cn } from '@/lib/utils';
 import { useSettings } from '@/state/settings';
-import type { PrintSize, ThemeMode } from '@/types/note';
+import type { ImageFont, ImageSpacing, PrintSize, ThemeMode } from '@/types/note';
 
 const THEMES: { value: ThemeMode; label: string }[] = [
   { value: 'light', label: 'Terang' },
@@ -20,6 +20,17 @@ const THEMES: { value: ThemeMode; label: string }[] = [
 const PRINTS: { value: PrintSize; label: string }[] = [
   { value: 'a4', label: 'A4' },
   { value: 'thermal', label: 'Thermal 80mm' },
+];
+
+const IMAGE_FONTS: { value: ImageFont; label: string }[] = [
+  { value: 'Arial', label: 'Modern' },
+  { value: 'Georgia', label: 'Elegan' },
+  { value: 'Courier New', label: 'Mono' },
+];
+
+const IMAGE_SPACING: { value: ImageSpacing; label: string }[] = [
+  { value: 'compact', label: 'Rapat' },
+  { value: 'comfortable', label: 'Nyaman' },
 ];
 
 function Segmented<T extends string>({
@@ -126,6 +137,84 @@ export const SettingsPanel = () => {
               onChange={(printSize) => update({ printSize })}
               name="print"
             />
+          </div>
+        </div>
+        <div className="grid gap-3 pt-1 sm:grid-cols-2">
+          <label className="flex items-center justify-between gap-3 text-sm font-medium">
+            <span>
+              Warna pengurangan
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Default merah</span>
+            </span>
+            <input
+              type="color"
+              value={settings.reductionColor}
+              onChange={(event) => update({ reductionColor: event.target.value })}
+              aria-label="Warna pengurangan"
+              data-testid="reduction-color-input"
+              className="h-10 w-14 cursor-pointer rounded-md border border-input bg-card p-1"
+            />
+          </label>
+          <label className="flex items-center justify-between gap-3 text-sm font-medium">
+            <span>
+              Warna total
+              <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Kontras hijau</span>
+            </span>
+            <input
+              type="color"
+              value={settings.totalColor}
+              onChange={(event) => update({ totalColor: event.target.value })}
+              aria-label="Warna total"
+              data-testid="total-color-input"
+              className="h-10 w-14 cursor-pointer rounded-md border border-input bg-card p-1"
+            />
+          </label>
+        </div>
+        <div className="border-t border-border pt-4">
+          <span className={labelBase}>Hasil gambar bagikan</span>
+          <p className="mt-1 text-sm text-muted-foreground">PNG dibuat dengan ukuran tetap agar tajam, rapi, dan tetap ringan.</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <div>
+              <span className="text-sm font-medium">Font</span>
+              <div className="mt-2">
+                <Segmented options={IMAGE_FONTS} value={settings.imageFont} onChange={(imageFont) => update({ imageFont })} name="image-font" />
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-medium">Jarak spasi</span>
+              <div className="mt-2">
+                <Segmented options={IMAGE_SPACING} value={settings.imageSpacing} onChange={(imageSpacing) => update({ imageSpacing })} name="image-spacing" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="flex items-center justify-between gap-3 text-sm font-medium">
+              <span>
+                Garis bantu
+                <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Pembatas antar bagian nota</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={settings.imageGuides}
+                onChange={(event) => update({ imageGuides: event.target.checked })}
+                aria-label="Garis bantu gambar"
+                data-testid="image-guides-input"
+                className="h-5 w-5 accent-primary"
+              />
+            </label>
+            <label className="flex items-center justify-between gap-3 text-sm font-medium">
+              <span>
+                Latar gambar
+                <span className="mt-0.5 block text-xs font-normal text-muted-foreground">Warna kertas nota</span>
+              </span>
+              <input
+                type="color"
+                value={settings.imageBackground}
+                onChange={(event) => update({ imageBackground: event.target.value })}
+                aria-label="Latar gambar"
+                data-testid="image-background-input"
+                className="h-10 w-14 cursor-pointer rounded-md border border-input bg-card p-1"
+              />
+            </label>
           </div>
         </div>
       </section>

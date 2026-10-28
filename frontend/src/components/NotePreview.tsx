@@ -15,6 +15,8 @@ interface Props {
   discount: Discount;
   note: string;
   storeName?: string;
+  reductionColor?: string;
+  totalColor?: string;
   createdAt?: string | null;
   readOnly?: boolean;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
@@ -33,6 +35,8 @@ export const NotePreview = ({
   discount,
   note,
   storeName = '',
+  reductionColor,
+  totalColor,
   createdAt,
   readOnly = false,
   inputRef,
@@ -44,10 +48,8 @@ export const NotePreview = ({
 }: Props) => {
   const payment = items.reduce((sum, item) => (item.subtotal < 0 ? sum + Math.abs(item.subtotal) : sum), 0);
   const hasPayment = payment > 0;
-  // Payment is stored as a negative item; add it back to the engine result to show the payable total.
-  const payableTotal = Math.max(totals.total + payment, 0);
-  const displayTotal = hasPayment ? payableTotal : totals.total;
-  const change = hasPayment ? payment - payableTotal : 0;
+  // Negative rows are already included in totals.total as reductions.
+  const displayTotal = totals.total;
 
   return (
     <div className="relative" data-testid="note-preview">
@@ -88,6 +90,7 @@ export const NotePreview = ({
               onDuplicate={onDuplicateItem}
               onRemove={onRemoveItem}
               onMove={onMoveItem}
+              reductionColor={reductionColor}
             />
           ))}
           {!readOnly && inputRef && onAddItems && (
@@ -110,18 +113,14 @@ export const NotePreview = ({
         )}
         <div className="mt-2 border-t-[3px] border-double border-paper-line">
           <TotalDisplay
-            label="Total"
+            label={displayTotal < 0 ? 'Kembali' : 'Total'}
             value={Math.abs(displayTotal)}
             emphasis
+            color={totalColor}
             testId="receipt-total"
           />
         </div>
-        {hasPayment && (
-          <>
-            <TotalDisplay label="Dibayar" value={payment} testId="receipt-paid" />
-            {change > 0 && <TotalDisplay label="Kembali" value={change} testId="receipt-change" />}
-          </>
-        )}
+        {hasPayment && <TotalDisplay label="Dibayar" value={-payment} color={reductionColor} testId="receipt-paid" />}
       </div>
 
       {note.trim() && (

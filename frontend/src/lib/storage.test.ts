@@ -13,7 +13,7 @@ import {
   saveNote,
   saveSettings,
 } from '@/lib/storage';
-import { NO_DISCOUNT } from '@/types/note';
+import { DEFAULT_SETTINGS, NO_DISCOUNT } from '@/types/note';
 import type { NoteItem } from '@/types/note';
 
 function items(...lines: string[]): NoteItem[] {
@@ -69,19 +69,19 @@ describe('IndexedDB storage', () => {
   });
 
   it('menyimpan pengaturan', async () => {
-    await saveSettings({ theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
-    expect(await getSettings()).toEqual({ theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
+    await saveSettings({ ...DEFAULT_SETTINGS, theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
+    expect(await getSettings()).toEqual({ ...DEFAULT_SETTINGS, theme: 'dark', printSize: 'thermal', storeName: 'TOKO MAKMUR' });
   });
 
   it('nama toko kosong secara default dan dapat dihapus', async () => {
     expect((await getSettings()).storeName).toBe('');
-    await saveSettings({ theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
-    await saveSettings({ theme: 'light', printSize: 'a4', storeName: '' });
+    await saveSettings({ ...DEFAULT_SETTINGS, theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
+    await saveSettings({ ...DEFAULT_SETTINGS, theme: 'light', printSize: 'a4', storeName: '' });
     expect((await getSettings()).storeName).toBe('');
   });
 
   it('hapus semua data menghapus nota, draft, dan nama toko', async () => {
-    await saveSettings({ theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
+    await saveSettings({ ...DEFAULT_SETTINGS, theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' });
     await saveNote(buildNote({ items: items('Barang 10'), discount: NO_DISCOUNT, note: '' }));
     await clearAllData();
 
@@ -98,11 +98,11 @@ describe('backup', () => {
       version: 1,
       exportedAt: '',
       notes: [note],
-      settings: { theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR' },
+      settings: { theme: 'light', printSize: 'a4', storeName: 'TOKO MAKMUR', reductionColor: '#dc2626', totalColor: '#166534' },
     });
     expect(parseBackup(raw)).toMatchObject({
       notes: [note],
-      settings: { storeName: 'TOKO MAKMUR' },
+      settings: { storeName: 'TOKO MAKMUR', reductionColor: '#dc2626', totalColor: '#166534' },
     });
   });
 

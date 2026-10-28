@@ -28,17 +28,31 @@ export interface Note {
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type PrintSize = 'a4' | 'thermal';
+export type ImageFont = 'Arial' | 'Georgia' | 'Courier New';
+export type ImageSpacing = 'compact' | 'comfortable';
 
 export interface Settings {
   theme: ThemeMode;
   printSize: PrintSize;
   storeName: string;
+  reductionColor: string;
+  totalColor: string;
+  imageFont: ImageFont;
+  imageSpacing: ImageSpacing;
+  imageGuides: boolean;
+  imageBackground: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   theme: 'system',
   printSize: 'a4',
   storeName: '',
+  reductionColor: '#dc2626',
+  totalColor: '#166534',
+  imageFont: 'Arial',
+  imageSpacing: 'comfortable',
+  imageGuides: true,
+  imageBackground: '#fffdf7',
 };
 
 export const NO_DISCOUNT: Discount = { type: 'none', value: 0 };

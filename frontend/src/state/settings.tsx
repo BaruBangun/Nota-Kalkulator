@@ -34,6 +34,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     theme: bootTheme(),
     printSize: localStorage.getItem(PRINT_KEY) === 'thermal' ? 'thermal' : 'a4',
     storeName: '',
+    reductionColor: DEFAULT_SETTINGS.reductionColor,
+    totalColor: DEFAULT_SETTINGS.totalColor,
+    imageFont: DEFAULT_SETTINGS.imageFont,
+    imageSpacing: DEFAULT_SETTINGS.imageSpacing,
+    imageGuides: DEFAULT_SETTINGS.imageGuides,
+    imageBackground: DEFAULT_SETTINGS.imageBackground,
   }));
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>(() => resolve(bootTheme()));
 

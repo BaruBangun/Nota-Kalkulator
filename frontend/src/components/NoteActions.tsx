@@ -1,4 +1,4 @@
-import { ClipboardCopy, FileDown, FilePlus2, MoreHorizontal, Plus, Printer, Save, Trash2 } from 'lucide-react';
+import { ClipboardCopy, FileImage, FilePlus2, MoreHorizontal, Plus, Printer, Save, Trash2 } from 'lucide-react';
 import { ShareButton } from '@/components/ShareButton';
 import {
   DropdownMenu,
@@ -21,12 +21,12 @@ export interface NoteActionsProps {
   onSave: () => void;
   onCopy: () => void;
   onPrint: () => void;
-  onSavePdf: () => void;
+  onSaveImage: () => void;
   onNew: () => void;
   onDelete?: () => void;
 }
 
-const MoreMenu = ({ onCopy, onPrint, onSavePdf, onNew, onDelete, isSaved, suffix }: NoteActionsProps & { suffix: string }) => (
+const MoreMenu = ({ onCopy, onPrint, onSaveImage, onNew, onDelete, isSaved, suffix }: NoteActionsProps & { suffix: string }) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <button
@@ -45,8 +45,8 @@ const MoreMenu = ({ onCopy, onPrint, onSavePdf, onNew, onDelete, isSaved, suffix
       <DropdownMenuItem onClick={onPrint} data-testid={`print-note-${suffix}`}>
         <Printer className="h-4 w-4" /> Print
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={onSavePdf} data-testid={`save-pdf-${suffix}`}>
-        <FileDown className="h-4 w-4" /> Simpan sebagai PDF
+      <DropdownMenuItem onClick={onSaveImage} data-testid={`save-image-${suffix}`}>
+        <FileImage className="h-4 w-4" /> Simpan sebagai PNG
       </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onNew} data-testid={`new-note-${suffix}`}>

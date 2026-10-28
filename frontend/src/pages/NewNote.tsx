@@ -9,7 +9,7 @@ import { NoteMemo } from '@/components/NoteMemo';
 import { NotePreview } from '@/components/NotePreview';
 import { buildNote, computeTotals } from '@/lib/calculator';
 import { buildNoteText, copyText } from '@/lib/share';
-import { createReceiptPdf, downloadPdf } from '@/lib/pdf';
+import { createReceiptImage, downloadReceiptImage } from '@/lib/receipt-image';
 import { deleteMeta, deleteNote, getMeta, getNote, saveNote, setMeta } from '@/lib/storage';
 import { btnOutline, btnSize } from '@/lib/styles';
 import { cn } from '@/lib/utils';
@@ -92,16 +92,13 @@ export default function NewNote() {
     else toast.error('Gagal menyalin nota');
   };
 
-  const handleSavePdf = () => {
+  const handleSaveImage = async () => {
     try {
-      const file = createReceiptPdf(currentNote(), {
-        storeName: settings.storeName,
-        printSize: settings.printSize,
-      });
-      downloadPdf(file);
-      toast.success('PDF disimpan');
+      const file = await createReceiptImage(currentNote(), settings.storeName, settings);
+      downloadReceiptImage(file);
+      toast.success('PNG nota disimpan');
     } catch {
-      toast.error('PDF gagal dibuat. Coba lagi.');
+      toast.error('PNG gagal dibuat. Coba lagi.');
     }
   };
 
@@ -141,7 +138,7 @@ export default function NewNote() {
     onSave: handleSave,
     onCopy: handleCopy,
     onPrint: () => window.print(),
-    onSavePdf: handleSavePdf,
+    onSaveImage: handleSaveImage,
     onNew: handleNew,
     onDelete: () => setConfirmDelete(true),
   };

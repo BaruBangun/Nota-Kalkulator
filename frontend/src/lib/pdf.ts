@@ -115,18 +115,15 @@ export function createReceiptPdf(note: Note, options: PdfOptions = {}): PdfFile 
 
   const positiveSubtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
   const hasPayment = paid > 0;
-  const displayedTotal = hasPayment ? Math.max(positiveSubtotal - note.discountAmount, 0) : note.total;
   if (note.discountAmount > 0) {
     y = drawRow(doc, 'Subtotal', formatNumber(positiveSubtotal), y, margin, right, contentWidth);
     y = drawRow(doc, 'Diskon', `-${formatNumber(note.discountAmount)}`, y, margin, right, contentWidth);
   }
-  if (hasPayment) y = drawRow(doc, 'DIBAYAR', formatNumber(paid), y, margin, right, contentWidth);
+  if (hasPayment) y = drawRow(doc, 'DIBAYAR', `-${formatNumber(paid)}`, y, margin, right, contentWidth);
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(printSize === 'thermal' ? 11 : 12);
-  y = drawRow(doc, 'TOTAL', formatNumber(Math.abs(displayedTotal)), y, margin, right, contentWidth);
-  const change = hasPayment ? paid - displayedTotal : note.total < 0 ? Math.abs(note.total) : 0;
-  if (change > 0) y = drawRow(doc, 'KEMBALI', formatNumber(change), y, margin, right, contentWidth);
+  y = drawRow(doc, note.total < 0 ? 'KEMBALI' : 'TOTAL', formatNumber(Math.abs(note.total)), y, margin, right, contentWidth);
 
   if (note.note.trim()) {
     y += 4;

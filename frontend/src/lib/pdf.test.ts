@@ -18,7 +18,7 @@ const note: Note = {
 };
 
 describe('local receipt PDF', () => {
-  it('membuat PDF thermal dengan nama toko dan pembayaran positif', async () => {
+  it('membuat PDF thermal dengan pembayaran sebagai pengurangan', async () => {
     const file = createReceiptPdf(note, { storeName: 'TOKO MAKMUR', printSize: 'thermal' });
     const content = await file.blob.text();
 
@@ -28,7 +28,7 @@ describe('local receipt PDF', () => {
     expect(content).toContain('TOKO MAKMUR');
     expect(content).toContain('DIBAYAR');
     expect(content).toContain('KEMBALI');
-    expect(content).not.toContain('DIBAYAR -');
+    expect(content).toContain('(-1.500)');
   });
 
   it('membuat PDF A4 tanpa header nama toko dan nama file aman', () => {

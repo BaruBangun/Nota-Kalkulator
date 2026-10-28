@@ -27,7 +27,7 @@ export const ShareButton = ({
     const outcome = await shareNote(getNote(), settings.storeName, settings);
     if (outcome === 'image-copied') toast.success('Image nota disalin. Paste langsung ke WhatsApp atau aplikasi lain.');
     if (outcome === 'copied') toast.success('Nota berhasil disalin');
-    if (outcome === 'downloaded') toast.success('Image nota diunduh karena berbagi file tidak tersedia.');
+    if (outcome === 'downloaded') toast.success('JPG nota diunduh. Tidak ada pemilih share yang dibuka.');
     if (outcome === 'failed') toast.error('Image nota gagal dibuat. Coba lagi.');
   };
 
